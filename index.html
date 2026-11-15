@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HAK IA Studio Ultimate Pro</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#070b12;--card:#0f172a;--panel:#0b1324;--input:#060a14;--border:#1e3a5f;--text:#f1f5f9;--muted:#93a4bd;--accent:#06b6d4;--accent2:#0891b2;--accent-dark:#155e75;--on-accent:#fff;--danger:#f87171;--ok:#34d399;--warn:#fbbf24;--shadow:0 10px 30px rgba(0,0,0,.35);color-scheme:dark}
 [data-theme=light]{--bg:#eef4fb;--card:#fff;--panel:#f1f5f9;--input:#fff;--border:#c7d6e8;--text:#0f172a;--muted:#475569;--accent:#0284c7;--accent2:#0369a1;--accent-dark:#075985;--danger:#dc2626;--ok:#059669;--warn:#b45309;--shadow:0 10px 30px rgba(15,23,42,.12);color-scheme:light}
@@ -114,7 +115,7 @@ body.busy .tab{opacity:.85}
     <div class="row">
       <a href="pricing.html" class="btn btn-ghost btn-sm" style="text-decoration:none">Tarifs</a>
       <span id="authStatus" class="badge">Gratuit</span>
-      <button id="btnAuth" class="btn btn-ghost btn-sm" onclick="openLogin()"><i class="fa-solid fa-user"></i> Connexion</button>
+      <button id="btnAuth" class="btn btn-ghost btn-sm"><i class="fa-solid fa-user"></i> Connexion</button>
       <button class="btn btn-ghost btn-sm" id="themeBtn" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i></button>
     </div>
   </header>
@@ -128,7 +129,6 @@ body.busy .tab{opacity:.85}
     <h1>HAK IA Studio Ultimate Pro</h1>
     <p class="muted">Suite de production : scripts IA, montage vidéo, mixage audio, conversion et préparation de diffusion. Le traitement des fichiers se fait dans votre navigateur et rien n'est envoyé à un serveur.</p>
   </div>
-  
   <div class="grid cols-2">
     <div class="card">
       <h2><i class="fa-solid fa-stethoscope"></i> Diagnostic du navigateur</h2>
@@ -184,14 +184,14 @@ body.busy .tab{opacity:.85}
 
 </main>
 
-<!-- MODAL CONNEXION (CORRIGÉ) -->
+<!-- MODAL CONNEXION -->
 <div id="loginModal" class="modal">
   <div class="card" style="position:relative">
     <button class="btn btn-ghost btn-sm" style="position:absolute;top:10px;right:10px;" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
     <h2>Connexion</h2>
-    <p class="small muted">Testez la connexion en mode démo (sans clé API).</p>
+    <p class="small muted">Recevez un lien de connexion magique par email.</p>
     <input type="email" id="loginEmail" class="field" placeholder="votre@email.com" style="margin-bottom:10px;">
-    <button class="btn block" onclick="loginMagicLink()">Se connecter (Démo)</button>
+    <button class="btn block" onclick="loginMagicLink()">Envoyer le lien</button>
     <div id="loginMsg" class="small" style="margin-top:10px;text-align:center;"></div>
   </div>
 </div>
@@ -199,16 +199,15 @@ body.busy .tab{opacity:.85}
 <div id="toast-notification" role="status" aria-live="polite"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
 <footer>HAK IA Studio Ultimate Pro · Traitement local dans le navigateur</footer>
 
-<!-- SCRIPT INTÉGRÉ (AUTH + FFMPEG) -->
+<!-- SCRIPT INTÉGRÉ AVEC VOS VRAIES CLÉS -->
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
 
-// --- 1. GESTION DE LA CONNEXION (MODE DÉMO) ---
-// Remplacez ces variables par vos vraies clés Supabase plus tard
-const SUPABASE_URL = 'VOTRE_URL';
-const SUPABASE_ANON_KEY = 'VOTRE_CLE';
-const isSupabaseConfigured = !SUPABASE_URL.includes('VOTRE_');
+// --- 1. CONNEXION SUPABASE RÉELLE ---
+const SUPABASE_URL = 'https://gxjhkjpxpahgoiezdzxl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4amhranB4cGFoZ29pZXpkenhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NTU2NzIsImV4cCI6MjExMDMzMTY3Mn0.yL2PldZ4b9KFC9DzXPBwti-CQnpNLPKD1wUHhDWcr1c';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let isPremium = false;
 
@@ -220,39 +219,55 @@ window.loginMagicLink = async () => {
     const msg = $('loginMsg');
     if (!email) { msg.innerHTML = '<span style="color:var(--danger)">Entrez un email.</span>'; return; }
     
-    msg.innerHTML = '<span style="color:var(--accent)">Connexion en cours...</span>';
+    msg.innerHTML = '<span style="color:var(--accent)">Envoi en cours...</span>';
     
-    // Mode Démo (si pas de clés Supabase)
-    if (!isSupabaseConfigured) {
-        setTimeout(() => {
-            isPremium = true;
-            updateAuthUI('Creator', email.split('@')[0]);
-            closeLogin();
-            showToast('Connecté en mode Démo (Premium activé !)');
-        }, 1000);
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+    
+    if (error) {
+        msg.innerHTML = `<span style="color:var(--danger)">${error.message}</span>`;
+    } else {
+        msg.innerHTML = '<span style="color:var(--ok)">Lien envoyé ! Vérifiez vos emails (et les spams).</span>';
+    }
+};
+
+async function checkUser() {
+    const { data: { session } } = await supabase.auth.getSession();
+    const btn = $('btnAuth');
+
+    if (!session) {
+        isPremium = false;
+        updateUI('Gratuit', 'Connexion', false);
+        btn.onclick = window.openLogin;
         return;
     }
 
-    // Mode Réel (si clés configurées)
-    // Le code Supabase s'exécuterait ici
-};
+    // L'utilisateur est connecté, on vérifie son abonnement
+    const { data, error } = await supabase.from('subscriptions').select('status').eq('user_id', session.user.id).maybeSingle();
+    
+    // Si la table n'existe pas ou n'a pas de ligne, il est gratuit
+    isPremium = (data?.status === 'active' || data?.status === 'trialing');
+    
+    const name = session.user.email.split('@')[0];
+    updateUI(isPremium ? 'Creator' : 'Gratuit', name, isPremium);
+    
+    btn.onclick = async () => {
+        await supabase.auth.signOut();
+        checkUser();
+    };
+}
 
-function updateAuthUI(badgeText, btnText) {
+function updateUI(badgeText, btnText, premium) {
     const badge = $('authStatus');
     const btn = $('btnAuth');
     badge.textContent = badgeText;
-    badge.classList.toggle('premium', isPremium);
+    badge.classList.toggle('premium', premium);
     btn.textContent = btnText;
-    btn.onclick = () => {
-        if (isPremium) {
-            isPremium = false;
-            updateAuthUI('Gratuit', 'Connexion');
-            showToast('Déconnecté');
-        } else {
-            openLogin();
-        }
-    };
 }
+
+// Écoute les changements de session (ex: quand on clique sur le lien reçu par mail)
+supabase.auth.onAuthStateChange(() => checkUser());
+checkUser();
+
 
 // --- 2. GESTION DU THÈME ---
 function applyTheme(t) { document.documentElement.dataset.theme = t; $('themeBtn').querySelector('i').className = 'fa-solid ' + (t === 'dark' ? 'fa-sun' : 'fa-moon'); }
@@ -261,16 +276,16 @@ applyTheme('dark');
 
 // --- 3. NAVIGATION ---
 const TABS = [
-  { id: 1, icon: 'fa-house-laptop', label: 'Accueil', short: 'Accueil' },
-  { id: 2, icon: 'fa-brain', label: 'IA Scripts', short: 'IA' },
-  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3 & liens', short: 'MP3' },
-  { id: 4, icon: 'fa-layer-group', label: 'Assemblage', short: 'Assemblage' },
-  { id: 5, icon: 'fa-scissors', label: 'Découpe', short: 'Découpe' },
-  { id: 6, icon: 'fa-sliders', label: 'Mixeur', short: 'Mixeur' },
-  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse', short: 'Vitesse' },
-  { id: 8, icon: 'fa-folder-tree', label: 'Gestion', short: 'Gestion' },
-  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs', short: 'Convert' },
-  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social', short: 'Social' }
+  { id: 1, icon: 'fa-house-laptop', label: 'Accueil' },
+  { id: 2, icon: 'fa-brain', label: 'IA Scripts' },
+  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3 & liens' },
+  { id: 4, icon: 'fa-layer-group', label: 'Assemblage' },
+  { id: 5, icon: 'fa-scissors', label: 'Découpe' },
+  { id: 6, icon: 'fa-sliders', label: 'Mixeur' },
+  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse' },
+  { id: 8, icon: 'fa-folder-tree', label: 'Gestion' },
+  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs' },
+  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social' }
 ];
 
 function buildNav() {
@@ -299,12 +314,62 @@ window.showToast = (msg, type = 'ok') => {
   t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3600);
 };
 
-// --- 5. PLACEHOLDER POUR LE STUDIO (Pour que les boutons ne plantent pas) ---
-window.onClipsPicked = () => showToast('Module d\'assemblage prêt (Code complet disponible).');
-window.clearClips = () => {};
-window.runStudio = () => showToast('Lancement du rendu...');
-window.cancelJob = () => showToast('Annulé.', 'error');
+// --- 5. FONCTIONS DU STUDIO (Version simplifiée pour éviter les erreurs) ---
+let isProcessing = false;
 
+window.onClipsPicked = (input) => {
+    const files = input.files;
+    if(files.length > 0) {
+        $('sum-formula-display').textContent = `${files.length} clip(s) sélectionné(s)`;
+        $('studio-empty').textContent = "Clips prêts. Cliquez sur Lancer l'assemblage.";
+    }
+};
+
+window.clearClips = () => {
+    $('real-videos-input').value = '';
+    $('sum-formula-display').textContent = "Somme : en attente…";
+    $('studio-empty').textContent = "Le rendu apparaîtra ici.";
+};
+
+window.runStudio = () => {
+    if(isProcessing) return;
+    isProcessing = true;
+    $('studio-run-btn').disabled = true;
+    $('studio-cancel-btn').classList.remove('hide');
+    $('line1-status').textContent = "Traitement en cours...";
+    
+    // Simulation de traitement pour tester l'interface
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 5;
+        $('studio-bar').firstElementChild.style.width = progress + '%';
+        $('line2-status').textContent = `Progression : ${progress}%`;
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            isProcessing = false;
+            $('studio-run-btn').disabled = false;
+            $('studio-cancel-btn').classList.add('hide');
+            $('line1-status').textContent = "Assemblage terminé ! (Mode simulation)";
+            
+            // Affiche un filigrane si pas premium
+            if(!isPremium) {
+                showToast("Vidéo générée AVEC filigrane (Plan Gratuit)", "error");
+            } else {
+                showToast("Vidéo générée SANS filigrane (Plan Creator)");
+            }
+        }
+    }, 100);
+};
+
+window.cancelJob = () => {
+    isProcessing = false;
+    $('studio-run-btn').disabled = false;
+    $('studio-cancel-btn').classList.add('hide');
+    $('line1-status').textContent = "Annulé par l'utilisateur.";
+    $('line2-status').textContent = "Prêt";
+    $('studio-bar').firstElementChild.style.width = '0%';
+};
 </script>
 </body>
 </html>
