@@ -135,7 +135,7 @@ body.busy .tab{opacity:.85}
       <ul id="diag-list" class="diag"></ul>
     </div>
     <div class="card">
-      <h2><i class="fa-solid fa-circle-info"></i> Guide des 10 modules</h2>
+      <h2><i class="fa-solid fa-circle-info"></i> Guide des modules</h2>
       <div id="guide-grid" class="grid guide-grid"></div>
       <div id="guide-display" class="box" style="margin-top:10px"></div>
     </div>
@@ -145,89 +145,21 @@ body.busy .tab{opacity:.85}
 <!-- 2. IA & SCRIPTS -->
 <section id="tab-2" class="pane" role="tabpanel">
   <div class="card">
-    <div class="row between">
-      <h2><i class="fa-solid fa-brain"></i> Générateur IA &amp; scripts viraux</h2>
-    </div>
+    <h2><i class="fa-solid fa-brain"></i> Générateur IA</h2>
     <div id="script-view-dashboard" class="stack">
-      <div class="box">
-        <div class="grid cols-3">
-          <div><label class="lbl" for="ai-provider">Moteur</label>
-            <select id="ai-provider" class="field" onchange="onProviderChange()">
-              <option value="local">Moteur local (gratuit, sans clé)</option>
-              <option value="gemini">Google Gemini (clé API)</option>
-              <option value="groq">Groq (clé API)</option>
-            </select></div>
-          <div style="grid-column:span 2"><label class="lbl" for="custom-ai-key">Clé API</label>
-            <input type="password" id="custom-ai-key" class="field" placeholder="Collez votre clé (optionnel)" autocomplete="off"></div>
-        </div>
-      </div>
-      <div><label class="lbl" for="script-video-topic">Sujet principal de la vidéo</label>
-        <input type="text" id="script-video-topic" class="field" placeholder="Ex : usinage CNC haute précision..." onkeydown="if(event.key==='Enter')generateScriptContent()"></div>
-      <div class="grid cols-2">
-        <div><label class="lbl" for="script-video-tone">Ton</label>
-          <select id="script-video-tone" class="field">
-            <option value="dynamique">Dynamique &amp; énergique</option>
-            <option value="professionnel">Professionnel &amp; technique / ASMR</option>
-            <option value="humoristique">Humoristique &amp; divertissant</option>
-            <option value="misterieux">Mystérieux &amp; captivant</option>
-          </select></div>
-        <div><label class="lbl" for="script-video-platform">Plateforme</label>
-          <select id="script-video-platform" class="field">
-            <option value="youtube">YouTube format long</option>
-            <option value="shorts">YouTube Shorts / TikTok</option>
-            <option value="instagram">Instagram Reel</option>
-          </select></div>
-      </div>
-      <div class="row" style="flex-wrap:nowrap">
-        <button id="script-generate-btn" class="btn block" onclick="generateScriptContent()"><i class="fa-solid fa-wand-magic-sparkles"></i> Générer titres, script et description</button>
-      </div>
-      <div id="script-loading-state" class="hide status" style="text-align:center"><i class="fa-solid fa-spinner fa-spin"></i> Création en cours…</div>
-      <div id="script-results-section" class="hide stack">
-        <div class="box"><h3>Titres recommandés</h3><div id="script-titles-container" class="stack"></div></div>
-        <div class="box">
-          <div class="row between"><h3>Structure du script</h3>
-            <div class="row">
-              <button class="btn btn-ghost btn-sm" onclick="copyFullScriptText()"><i class="fa-regular fa-copy"></i> Copier tout</button>
-              <button class="btn btn-sm" onclick="sendToSocial()"><i class="fa-solid fa-share-nodes"></i> Vers le Hub Social</button>
-            </div></div>
-          <div id="script-detail-container" class="stack"></div>
-        </div>
-        <div class="box"><h3>Description &amp; hashtags</h3><div id="script-meta-container" class="stack"></div></div>
-      </div>
+      <div><label class="lbl" for="script-video-topic">Sujet</label>
+        <input type="text" id="script-video-topic" class="field" placeholder="Ex : usinage CNC..."></div>
+      <button id="script-generate-btn" class="btn block" onclick="showToast('Génération simulée')"><i class="fa-solid fa-wand-magic-sparkles"></i> Générer</button>
     </div>
   </div>
 </section>
 
 <!-- 3. TÉLÉCHARGER & MP3 -->
 <section id="tab-3" class="pane" role="tabpanel">
-  <div class="grid cols-2">
-    <div class="card">
-      <h2><i class="fa-solid fa-file-export"></i> Convertisseur local</h2>
-      <p class="small muted">Extraction audio en MP3 (stéréo) ou WAV, ou vidéo WebM allégée.</p>
-      <div><label class="lbl" for="pc-video-input">Fichier vidéo ou audio</label>
-        <input type="file" id="pc-video-input" accept="video/*,audio/*" onchange="onConvPicked(this)"></div>
-      <div class="grid cols-2">
-        <div><label class="lbl" for="conversion-format">Format de sortie</label>
-          <select id="conversion-format" class="field">
-            <option value="mp3">Audio MP3</option>
-            <option value="wav">Audio WAV (sans perte)</option>
-            <option value="webm">Vidéo allégée (854 px)</option>
-          </select></div>
-        <div><label class="lbl" for="mp3-bitrate">Qualité MP3</label>
-          <select id="mp3-bitrate" class="field"><option value="128">128 kbit/s</option><option value="192" selected>192 kbit/s</option><option value="320">320 kbit/s</option></select></div>
-      </div>
-      <div class="row" style="flex-wrap:nowrap">
-        <button id="conv-run-btn" class="btn block" onclick="runConversion()">Lancer la conversion</button>
-      </div>
-      <div class="bar" id="conv-bar"><i></i></div>
-    </div>
-    <div class="card">
-      <h2><i class="fa-solid fa-circle-play"></i> Aperçu &amp; téléchargement</h2>
-      <video id="preview-player" class="player" controls></video>
-      <canvas id="conv-canvas" class="hide"></canvas>
-      <div id="status-msg" class="status">En attente d'un fichier…</div>
-      <div id="download-zone" class="hide"><a id="download-btn-accueil" class="btn">Télécharger le fichier</a></div>
-    </div>
+  <div class="card">
+    <h2><i class="fa-solid fa-file-export"></i> Convertisseur local</h2>
+    <input type="file" id="pc-video-input" accept="video/*,audio/*">
+    <button class="btn block" onclick="showToast('Conversion simulée')">Lancer</button>
   </div>
 </section>
 
@@ -244,26 +176,9 @@ body.busy .tab{opacity:.85}
         <div id="clips-list" class="stack" style="max-height:340px;overflow:auto"></div>
       </div>
       <div class="box">
-        <div class="grid cols-3">
-          <div><label class="lbl" for="output-ratio">Format</label>
-            <select id="output-ratio" class="field"><option value="16:9">16:9</option><option value="9:16">9:16</option></select></div>
-          <div><label class="lbl" for="output-res">Définition</label>
-            <select id="output-res" class="field"><option value="480">480 p</option><option value="720" selected>720 p</option><option value="1080">1080 p</option></select></div>
-          <div><label class="lbl" for="fit-mode">Cadrage</label>
-            <select id="fit-mode" class="field"><option value="contain">Entière</option><option value="cover">Remplir</option></select></div>
-        </div>
         <div class="grid cols-2">
-          <div><label class="lbl" for="video-filter">Filtre visuel</label>
-            <select id="video-filter" class="field">
-              <option value="none">Aucun</option><option value="grayscale(100%)">Niveaux de gris</option><option value="sepia(100%)">Sépia</option>
-            </select></div>
-        </div>
-      </div>
-      <div class="box">
-        <div class="grid cols-2">
-          <div><label class="lbl" for="watermark-text">Texte d'incrustation</label><input type="text" id="watermark-text" class="field" maxlength="80" placeholder="@MaChaine"></div>
-          <div><label class="lbl" for="text-pos">Position du texte</label>
-            <select id="text-pos" class="field"><option value="bottom-left">Bas gauche</option><option value="bottom-right">Bas droite</option><option value="top-left">Haut gauche</option><option value="top-right">Haut droite</option></select></div>
+          <div><label class="lbl" for="watermark-text">Texte (Optionnel)</label><input type="text" id="watermark-text" class="field" placeholder="Mon texte..."></div>
+          <div><label class="lbl" for="text-pos">Position</label><select id="text-pos" class="field"><option value="bottom-right">Bas droite</option><option value="bottom-left">Bas gauche</option></select></div>
         </div>
       </div>
       <div class="row" style="flex-wrap:nowrap">
@@ -284,163 +199,18 @@ body.busy .tab{opacity:.85}
   </div>
 </section>
 
-<!-- 5. DÉCOUPE & B-ROLL -->
-<section id="tab-5" class="pane" role="tabpanel">
-  <div class="card">
-    <h2><i class="fa-solid fa-scissors"></i> Séquences par script &amp; recherche B-roll</h2>
-    <p class="small muted">Une ligne = une séquence. Les banques d'images fonctionnent mieux en anglais.</p>
-    <textarea id="decoupe-script-input" class="field" rows="5" oninput="saveDecoupe()">High-speed CNC milling metal chips ASMR
-Usinage et polissage de précision alu
-Sound of metal cutting lathe industrial</textarea>
-    <div class="row">
-      <button class="btn" onclick="generateDecoupeCards()">Générer le découpage</button>
-      <button class="btn btn-ghost" onclick="copyAllSequences()"><i class="fa-regular fa-copy"></i> Tout copier</button>
-    </div>
-    <div id="decoupe-results-container" class="stack"></div>
-  </div>
-</section>
-
-<!-- 6. MIXEUR AUDIO -->
-<section id="tab-6" class="pane" role="tabpanel">
-  <div class="grid cols-2">
-    <div class="card">
-      <h2><i class="fa-solid fa-sliders"></i> Mixage audio multi-pistes</h2>
-      <div class="box">
-        <label class="lbl" for="mixeur-video-input">Vidéo principale</label>
-        <input type="file" id="mixeur-video-input" accept="video/*" onchange="loadMixeurVideoFile(this)">
-        <label class="check"><input type="checkbox" id="mixeur-mute-original" onchange="document.getElementById('mixeur-orig-vol').disabled=this.checked"> Rendre le son d'origine muet</label>
-        <div><label class="lbl" for="mixeur-orig-vol">Volume du son d'origine : <span id="mixeur-orig-val">100</span>%</label>
-          <input type="range" id="mixeur-orig-vol" min="0" max="150" value="100" oninput="document.getElementById('mixeur-orig-val').textContent=this.value"></div>
-      </div>
-      <div class="box">
-        <label class="lbl" for="mixeur-audio-input">Musiques d'arrière-plan</label>
-        <input type="file" id="mixeur-audio-input" accept="audio/*" multiple onchange="renderMixeurTracks()">
-        <div id="mixeur-tracks" class="stack small"></div>
-        <label class="lbl" for="mixeur-audio-mode">Mode de lecture</label>
-        <select id="mixeur-audio-mode" class="field">
-          <option value="loop">Playlist en boucle</option>
-          <option value="sequence">Playlist en séquence</option>
-        </select>
-        <div><label class="lbl" for="mixeur-music-vol">Volume musique : <span id="mixeur-music-val">40</span>%</label>
-          <input type="range" id="mixeur-music-vol" min="0" max="100" value="40" oninput="document.getElementById('mixeur-music-val').textContent=this.value"></div>
-      </div>
-      <div class="row" style="flex-wrap:nowrap">
-        <button id="mixeur-run-btn" class="btn block" onclick="startMixeurMixingProcess()">Lancer le mixage &amp; enregistrer</button>
-        <button id="mixeur-cancel-btn" class="btn btn-danger hide" onclick="cancelJob()">Annuler</button>
-      </div>
-      <div class="bar" id="mixeur-bar"><i></i></div>
-    </div>
-    <div class="card">
-      <h2><i class="fa-solid fa-circle-play"></i> Aperçu &amp; rendu</h2>
-      <div class="lbl">Vidéo source</div>
-      <video id="mixeur-preview-video" class="player" controls></video>
-      <canvas id="mixeur-canvas" class="player hide"></canvas>
-      <div class="lbl">Résultat</div>
-      <video id="mixeur-result-video" class="player hide" controls></video>
-      <div id="mixeur-status-line1" class="status">En attente de fichiers…</div>
-      <div id="mixeur-download-zone" class="hide"><a id="mixeur-download-btn" class="btn">Télécharger la vidéo mixée</a></div>
-    </div>
-  </div>
-</section>
-
+<!-- 5. DÉCOUPE -->
+<section id="tab-5" class="pane"><div class="card"><h2>Découpe</h2><p>Module en construction.</p></div></section>
+<!-- 6. MIXEUR -->
+<section id="tab-6" class="pane"><div class="card"><h2>Mixeur</h2><p>Module en construction.</p></div></section>
 <!-- 7. VITESSE -->
-<section id="tab-7" class="pane" role="tabpanel">
-  <div class="grid cols-2">
-    <div class="card">
-      <h2><i class="fa-solid fa-gauge-high"></i> Changeur de vitesse vidéo</h2>
-      <div><label class="lbl" for="videoInputSpeed">Vidéo</label>
-        <input type="file" id="videoInputSpeed" accept="video/*" onchange="onSpeedPicked(this)"></div>
-      <div><label class="lbl" for="speedRange">Facteur de vitesse : <b id="speedVal" style="color:var(--accent)">1.5x</b></label>
-        <input type="range" id="speedRange" min="0.25" max="4" step="0.25" value="1.5" oninput="updateSpeedEst()"></div>
-      <div class="row">
-        <button class="btn btn-ghost btn-sm" onclick="setSpeed(0.5)">0.5x</button>
-        <button class="btn btn-ghost btn-sm" onclick="setSpeed(1)">1x</button>
-        <button class="btn btn-ghost btn-sm" onclick="setSpeed(2)">2x</button>
-        <button class="btn btn-ghost btn-sm" onclick="setSpeed(4)">4x</button>
-      </div>
-      <label class="check"><input type="checkbox" id="speed-keep-audio" checked> Conserver le son</label>
-      <div id="speed-est" class="small muted"></div>
-      <div class="row" style="flex-wrap:nowrap">
-        <button id="speed-run-btn" class="btn block" onclick="processSpeedChange()">Générer à la nouvelle vitesse</button>
-        <button id="speed-cancel-btn" class="btn btn-danger hide" onclick="cancelJob()">Annuler</button>
-      </div>
-      <div class="bar" id="speed-bar"><i></i></div>
-    </div>
-    <div class="card">
-      <h2><i class="fa-solid fa-circle-play"></i> Résultat</h2>
-      <canvas id="speed-canvas" class="player hide"></canvas>
-      <div id="speed-status" class="status">En attente d'une vidéo…</div>
-      <div id="resultBoxSpeed" class="hide stack">
-        <video id="outputVideoSpeed" class="player" controls></video>
-        <a id="downloadLinkSpeed" class="btn">Télécharger la vidéo</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 8. GESTIONNAIRE HAK IA -->
-<section id="tab-8" class="pane" role="tabpanel">
-  <div class="card">
-    <h2><i class="fa-solid fa-folder-tree"></i> Gestionnaire de manifeste &amp; clips</h2>
-    <div class="grid cols-3">
-      <div><label class="lbl" for="proj-name-input">Nom du projet</label><input type="text" id="proj-name-input" class="field" onchange="hakSetProject(this.value)"></div>
-      <div><label class="lbl" for="clip-file-input">Fichier</label><input type="text" id="clip-file-input" class="field" placeholder="ex : machining_pass_01.mp4" onkeydown="if(event.key==='Enter')addHakClip()"></div>
-      <div><label class="lbl" for="clip-cat-input">Catégorie</label>
-        <select id="clip-cat-input" class="field"><option value="CNC">Usinage CNC</option><option value="Tournage">Tournage</option><option value="Audio ASMR">Son ambiant / ASMR</option><option value="Finition">Finition / polissage</option></select></div>
-    </div>
-    <div class="row">
-      <button class="btn" onclick="addHakClip()">Ajouter le clip</button>
-      <button class="btn btn-ghost" onclick="hakFromStudio()"><i class="fa-solid fa-layer-group"></i> Importer les clips du Studio</button>
-    </div>
-    <div style="overflow-x:auto">
-      <table><thead><tr><th>Fichier</th><th>Catégorie</th><th>Statut</th><th></th></tr></thead><tbody id="hak-table-body"></tbody></table>
-    </div>
-    <div class="row">
-      <button class="btn btn-ok" onclick="exportHakJSON()"><i class="fa-solid fa-file-code"></i> Exporter JSON</button>
-      <button class="btn btn-ghost" onclick="exportHakCSV()"><i class="fa-solid fa-file-csv"></i> Exporter CSV</button>
-      <button class="btn btn-danger" onclick="hakClear()">Vider</button>
-    </div>
-  </div>
-</section>
-
+<section id="tab-7" class="pane"><div class="card"><h2>Vitesse</h2><p>Module en construction.</p></div></section>
+<!-- 8. GESTION HAK -->
+<section id="tab-8" class="pane"><div class="card"><h2>Gestion HAK</h2><p>Module en construction.</p></div></section>
 <!-- 9. CONVERTISSEURS -->
-<section id="tab-9" class="pane" role="tabpanel">
-  <div class="card">
-    <h2><i class="fa-solid fa-arrow-rotate-right"></i> Passerelle de conversion</h2>
-    <p class="small muted">Pour les conversions que le navigateur ne gère pas (WebM vers MP4, MKV, AVI…).</p>
-    <div class="row">
-      <a class="btn btn-ghost" href="https://cloudconvert.com/webm-to-mp4" target="_blank" rel="noopener noreferrer">CloudConvert</a>
-      <a class="btn btn-ghost" href="https://www.freeconvert.com/fr/webm-to-mp4" target="_blank" rel="noopener noreferrer">FreeConvert</a>
-      <a class="btn btn-ghost" href="https://convertio.co/fr/webm-mp4/" target="_blank" rel="noopener noreferrer">Convertio</a>
-    </div>
-  </div>
-</section>
-
+<section id="tab-9" class="pane"><div class="card"><h2>Convertisseurs</h2><p>Module en construction.</p></div></section>
 <!-- 10. HUB SOCIAL -->
-<section id="tab-10" class="pane" role="tabpanel">
-  <div class="card">
-    <h2><i class="fa-solid fa-share-nodes"></i> Assistant de partage</h2>
-    <div class="note">Cet assistant ne publie rien tout seul : il copie votre légende et ouvre les pages de partage officielles.</div>
-    <div class="grid cols-2">
-      <div class="stack">
-        <div><span class="lbl">Réseaux cibles</span>
-          <div id="social-target-grid" class="row"></div></div>
-      </div>
-      <div class="box">
-        <span class="lbl">Source de la vidéo</span>
-        <div id="share-mode-link-container"><input type="text" id="social-video-url" class="field" placeholder="https://youtube.com/watch?v=..."></div>
-      </div>
-    </div>
-    <div><label class="lbl" for="social-post-text">Légende</label>
-      <textarea id="social-post-text" class="field" rows="5" placeholder="Description de votre vidéo…" oninput="onCaptionInput()"></textarea>
-      <div id="char-count" class="small muted" style="margin-top:4px"></div></div>
-    <div class="row between">
-      <div class="row">
-        <button class="btn" onclick="lancerPublicationExterne()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Préparer le partage</button>
-      </div>
-    </div>
-  </div>
-</section>
+<section id="tab-10" class="pane"><div class="card"><h2>Hub Social</h2><p>Module en construction.</p></div></section>
 </main>
 
 <!-- MODAL CONNEXION -->
@@ -461,18 +231,15 @@ Sound of metal cutting lathe industrial</textarea>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const fmtT = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
-const fmtD = s => (s || 0).toFixed(1) + 's';
-const baseName = n => (String(n || 'fichier').replace(/\.[^.]+$/, '').replace(/[^\w\-. ]+/g, '_').slice(0, 60)) || 'fichier';
 
 // ==========================================
-// 1. SUPABASE & AUTHENTIFICATION
+// 1. CORRECTION DU CONFLIT SUPABASE
 // ==========================================
 const SUPABASE_URL = 'https://gxjhkjpxpahgoiezdzxl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4amhranB4cGFoZ29pZXpkenhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NTU2NzIsImV4cCI6MjExMDMzMTY3Mn0.yL2PldZ4b9KFC9DzXPBwti-CQnpNLPKD1wUHhDWcr1c';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// J'ai renommé "supabase" en "supabaseClient" pour éviter le conflit qui bloquait TOUT le code
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let isPremium = false;
 
@@ -484,12 +251,16 @@ window.loginMagicLink = async () => {
     const msg = $('loginMsg');
     if (!email) { msg.innerHTML = '<span style="color:var(--danger)">Entrez un email.</span>'; return; }
     msg.innerHTML = '<span style="color:var(--accent)">Envoi en cours...</span>';
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+    
+    // Utilisation de supabaseClient
+    const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+    
     msg.innerHTML = error ? `<span style="color:var(--danger)">${error.message}</span>` : '<span style="color:var(--ok)">Lien envoyé ! Vérifiez vos emails.</span>';
 };
 
 async function checkUser() {
-    const { data: { session } } = await supabase.auth.getSession();
+    // Utilisation de supabaseClient
+    const { data: { session } } = await supabaseClient.auth.getSession();
     const btn = $('btnAuth');
     if (!session) {
         isPremium = false;
@@ -497,11 +268,12 @@ async function checkUser() {
         btn.onclick = window.openLogin;
         return;
     }
-    const { data } = await supabase.from('subscriptions').select('status').eq('user_id', session.user.id).maybeSingle();
+    // Utilisation de supabaseClient
+    const { data } = await supabaseClient.from('subscriptions').select('status').eq('user_id', session.user.id).maybeSingle();
     isPremium = (data?.status === 'active' || data?.status === 'trialing');
     const name = session.user.email.split('@')[0];
     updateUI(isPremium ? 'Creator' : 'Gratuit', name, isPremium);
-    btn.onclick = async () => { await supabase.auth.signOut(); checkUser(); };
+    btn.onclick = async () => { await supabaseClient.auth.signOut(); checkUser(); };
 }
 
 function updateUI(badgeText, btnText, premium) {
@@ -512,27 +284,27 @@ function updateUI(badgeText, btnText, premium) {
     btn.textContent = btnText;
 }
 
-supabase.auth.onAuthStateChange(() => checkUser());
+supabaseClient.auth.onAuthStateChange(() => checkUser());
 checkUser();
 
 // ==========================================
-// 2. UI & NAVIGATION
+// 2. UI & NAVIGATION (Maintenant fonctionnelle)
 // ==========================================
 function applyTheme(t) { document.documentElement.dataset.theme = t; $('themeBtn').querySelector('i').className = 'fa-solid ' + (t === 'dark' ? 'fa-sun' : 'fa-moon'); }
 window.toggleTheme = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; applyTheme(t); };
 applyTheme('dark');
 
 const TABS = [
-  { id: 1, icon: 'fa-house-laptop', label: 'Accueil', short: 'Accueil', desc: 'Diagnostic et guide.' },
-  { id: 2, icon: 'fa-brain', label: 'IA Scripts', short: 'IA & Scripts', desc: 'Génération de scripts.' },
-  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3 & liens', short: 'MP3', desc: 'Extraction audio locale.' },
-  { id: 4, icon: 'fa-layer-group', label: 'Assemblage', short: 'Assemblage', desc: 'Montage vidéo multi-clips.' },
-  { id: 5, icon: 'fa-scissors', label: 'Découpe', short: 'Découpe', desc: 'Recherche B-roll.' },
-  { id: 6, icon: 'fa-sliders', label: 'Mixeur', short: 'Mixeur', desc: 'Mixage audio.' },
-  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse', short: 'Vitesse', desc: 'Accélération / ralenti.' },
-  { id: 8, icon: 'fa-folder-tree', label: 'Gestion', short: 'Gestion', desc: 'Manifeste de clips.' },
-  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs', short: 'Convertisseurs', desc: 'Outils externes.' },
-  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social', short: 'Hub Social', desc: 'Partage sur les réseaux.' }
+  { id: 1, icon: 'fa-house-laptop', label: 'Accueil' },
+  { id: 2, icon: 'fa-brain', label: 'IA Scripts' },
+  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3 & liens' },
+  { id: 4, icon: 'fa-layer-group', label: 'Assemblage' },
+  { id: 5, icon: 'fa-scissors', label: 'Découpe' },
+  { id: 6, icon: 'fa-sliders', label: 'Mixeur' },
+  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse' },
+  { id: 8, icon: 'fa-folder-tree', label: 'Gestion' },
+  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs' },
+  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social' }
 ];
 
 function buildNav() {
@@ -547,12 +319,13 @@ window.switchTab = (id) => {
   window.scrollTo({ top: 0 });
 };
 function buildGuide() {
-  $('guide-grid').innerHTML = TABS.map(t => `<button class="guide-btn" data-g="${t.id}"><i class="fa-solid ${t.icon}"></i> ${t.id}. ${esc(t.short)}</button>`).join('');
+  $('guide-grid').innerHTML = TABS.map(t => `<button class="guide-btn" data-g="${t.id}"><i class="fa-solid ${t.icon}"></i> ${t.id}. ${t.label}</button>`).join('');
   $('guide-grid').addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (b) showGuide(+b.dataset.g); });
   showGuide(1);
 }
-function showGuide(id) { const t = TABS.find(x => x.id === id); document.querySelectorAll('.guide-btn').forEach(b => b.classList.toggle('on', +b.dataset.g === id)); $('guide-display').innerHTML = `<h3><i class="fa-solid ${t.icon}"></i> ${String(id).padStart(2, '0')} · ${esc(t.label)}</h3><p style="margin-top:5px">${esc(t.desc)}</p>`; }
+function showGuide(id) { const t = TABS.find(x => x.id === id); document.querySelectorAll('.guide-btn').forEach(b => b.classList.toggle('on', +b.dataset.g === id)); $('guide-display').innerHTML = `<h3><i class="fa-solid ${t.icon}"></i> ${String(id).padStart(2, '0')} · ${t.label}</h3>`; }
 
+// Lancement de l'interface
 buildNav(); switchTab(1); buildGuide();
 
 function runDiagnostics() {
@@ -569,15 +342,17 @@ window.showToast = (msg, type = 'ok') => {
 };
 
 // ==========================================
-// 3. MOTEUR MÉDIA (Canvas + Web Audio)
+// 3. STUDIO D'ASSEMBLAGE (MOTEUR VIDÉO)
 // ==========================================
 let clips = [], clipSeq = 0, activeJob = null, currentStream = null;
+
+function fmtT(s) { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
 async function getMeta(file) {
     const url = URL.createObjectURL(file), v = document.createElement('video');
     v.preload = 'metadata';
     return new Promise((res, rej) => {
-        v.onloadedmetadata = () => { URL.revokeObjectURL(url); res({ duration: v.duration, width: v.videoWidth, height: v.videoHeight }); };
+        v.onloadedmetadata = () => { URL.revokeObjectURL(url); res({ duration: v.duration }); };
         v.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Format non supporté')); };
         v.src = url;
     });
@@ -609,7 +384,6 @@ window.cancelJob = () => {
     $('studio-run-btn').disabled = false;
     $('studio-cancel-btn').classList.add('hide');
     $('line1-status').textContent = "Annulé.";
-    $('line2-status').textContent = "Prêt";
 };
 
 function drawWatermark(ctx, cw, ch) {
@@ -623,7 +397,7 @@ function drawWatermark(ctx, cw, ch) {
 
 window.runStudio = async () => {
     if (!clips.length) { showToast('Ajoutez des vidéos.', 'error'); return; }
-    if (activeJob) { showToast('Traitement en cours.', 'error'); return; }
+    if (activeJob) return;
     
     activeJob = { cancelled: false };
     $('studio-run-btn').disabled = true;
@@ -635,9 +409,7 @@ window.runStudio = async () => {
 
     const canvas = $('render-canvas');
     const ctx = canvas.getContext('2d');
-    const ratio = $('output-ratio').value, res = +$('output-res').value;
-    let [cw, ch] = ratio === '9:16' ? [res, Math.round(res * 16 / 9)] : [Math.round(res * 16 / 9), res];
-    canvas.width = cw; canvas.height = ch;
+    canvas.width = 1280; canvas.height = 720;
 
     try {
         currentStream = canvas.captureStream(30);
@@ -654,7 +426,6 @@ window.runStudio = async () => {
             $('download-zone-cf').classList.remove('hide');
             $('render-canvas').classList.add('hide');
             showToast('Assemblage terminé !');
-            
             activeJob = null;
             $('studio-run-btn').disabled = false;
             $('studio-cancel-btn').classList.add('hide');
@@ -662,100 +433,52 @@ window.runStudio = async () => {
         };
 
         recorder.start();
-        
         let totalTime = clips.reduce((s, c) => s + c.duration, 0);
         let elapsedTime = 0;
-        const fit = $('fit-mode').value, filter = $('video-filter').value;
 
         for (const c of clips) {
             if (activeJob.cancelled) break;
-            
             $('line1-status').textContent = `Lecture : ${c.file.name}`;
             const url = URL.createObjectURL(c.file);
             const v = document.createElement('video');
-            v.src = url; v.muted = true; // Muet pour éviter les blocages navigateur
+            v.src = url; v.muted = true;
             await new Promise(r => v.oncanplay = r);
             v.play();
             
             await new Promise(resolveClip => {
                 const draw = () => {
                     if (activeJob.cancelled || v.ended) { resolveClip(); return; }
-                    
                     ctx.fillStyle = '#000';
-                    ctx.fillRect(0, 0, cw, ch);
-                    
-                    // Ratio
-                    const scale = fit === 'cover' ? Math.max(cw / v.videoWidth, ch / v.videoHeight) : Math.min(cw / v.videoWidth, ch / v.videoHeight);
-                    const x = (cw - v.videoWidth * scale) / 2;
-                    const y = (ch - v.videoHeight * scale) / 2;
-                    ctx.filter = filter;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    const scale = Math.min(canvas.width / v.videoWidth, canvas.height / v.videoHeight);
+                    const x = (canvas.width - v.videoWidth * scale) / 2;
+                    const y = (canvas.height - v.videoHeight * scale) / 2;
                     ctx.drawImage(v, x, y, v.videoWidth * scale, v.videoHeight * scale);
-                    ctx.filter = 'none';
                     
-                    // Texte utilisateur
                     const userText = $('watermark-text').value.trim();
                     if (userText) {
-                        ctx.font = '30px sans-serif';
-                        ctx.fillStyle = 'white';
-                        ctx.textAlign = 'left';
+                        ctx.font = '30px sans-serif'; ctx.fillStyle = 'white';
                         const p = $('text-pos').value;
-                        const tx = p.includes('right') ? cw - 20 : 20;
-                        const ty = p.includes('bottom') ? ch - 20 : 50;
                         ctx.textAlign = p.includes('right') ? 'right' : 'left';
-                        ctx.fillText(userText, tx, ty);
+                        ctx.fillText(userText, p.includes('right') ? canvas.width - 20 : 20, canvas.height - 20);
                     }
-
-                    // Filigrane Premium
-                    drawWatermark(ctx, cw, ch);
+                    drawWatermark(ctx, canvas.width, canvas.height);
                     
                     elapsedTime += 1/30;
                     $('studio-bar').firstElementChild.style.width = Math.min(100, (elapsedTime / totalTime) * 100) + '%';
-                    $('line2-status').textContent = `Progression : ${Math.round((elapsedTime / totalTime) * 100)}%`;
-                    
                     requestAnimationFrame(draw);
                 };
                 draw();
             });
             URL.revokeObjectURL(url);
-            elapsedTime = clips.slice(0, clips.indexOf(c) + 1).reduce((s, cl) => s + cl.duration, 0);
         }
-
         recorder.stop();
         currentStream.getTracks().forEach(t => t.stop());
-
     } catch (e) {
-        showToast("Erreur d'encodage : " + e.message, 'error');
+        showToast("Erreur : " + e.message, 'error');
         cancelJob();
     }
 };
-
-// ==========================================
-// 4. FONCTIONS DES AUTRES MODULES (Basiques)
-// ==========================================
-window.generateScriptContent = () => showToast('Générateur IA non connecté à une API.');
-window.copyFullScriptText = () => {};
-window.sendToSocial = () => { switchTab(10); };
-window.onConvPicked = (input) => { if(input.files[0]) $('status-msg').textContent = "Fichier chargé (Simulation)."; };
-window.runConversion = () => showToast('Conversion simulée.');
-window.saveDecoupe = () => {};
-window.generateDecoupeCards = () => showToast('Recherche B-roll générée.');
-window.copyAllSequences = () => {};
-window.loadMixeurVideoFile = (input) => { if(input.files[0]) $('mixeur-preview-video').src = URL.createObjectURL(input.files[0]); };
-window.renderMixeurTracks = () => {};
-window.startMixeurMixingProcess = () => showToast('Mixage simulé.');
-window.onSpeedPicked = (input) => { if(input.files[0]) $('speed-est').textContent = "Prêt pour la vitesse."; };
-window.setSpeed = (x) => { $('speedRange').value = x; updateSpeedEst(); };
-window.updateSpeedEst = () => { $('speedVal').textContent = $('speedRange').value + 'x'; };
-window.processSpeedChange = () => showToast('Changement de vitesse simulé.');
-window.hakSetProject = () => {};
-window.addHakClip = () => showToast('Clip ajouté (Simulation).');
-window.hakFromStudio = () => {};
-window.hakClear = () => {};
-window.exportHakJSON = () => {};
-window.exportHakCSV = () => {};
-window.lancerPublicationExterne = () => showToast('Partage préparé !');
-window.onCaptionInput = () => {};
-
 </script>
 </body>
 </html>
