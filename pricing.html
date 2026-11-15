@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarifs — HAK IA Studio</title>
+<style>
+body { background:#121212; color:#e0e0e0; font-family:'Segoe UI',sans-serif; margin:0; display:flex; flex-direction:column; min-height:100vh; }
+.header { background:#1e1e1e; padding:15px 30px; border-bottom:2px solid #00bcd4; }
+.header a { color:#00bcd4; text-decoration:none; font-weight:bold; }
+.wrap { max-width:900px; margin:40px auto; padding:0 20px; flex:1; }
+h1 { text-align:center; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:25px; margin-top:30px; }
+.card { background:#1e1e1e; border:1px solid #333; border-radius:10px; padding:30px; }
+.card.featured { border-color:#00bcd4; position:relative; }
+.card.featured::before { content:"Recommandé"; position:absolute; top:-12px; left:20px; background:#00bcd4; color:#000; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:bold; }
+.price { font-size:42px; color:#00bcd4; font-weight:bold; margin:15px 0; }
+.price span { font-size:16px; color:#aaa; }
+ul { list-style:none; padding:0; line-height:2; }
+ul li::before { content:"✓ "; color:#4caf50; font-weight:bold; }
+ul li.no::before { content:"✗ "; color:#ff5252; }
+.cta { display:block; text-align:center; background:#00bcd4; color:#000; padding:15px; border-radius:6px; text-decoration:none; font-weight:bold; margin-top:20px; font-size:17px; cursor:pointer; border:none; width:100%; }
+.cta:hover { background:#008ba3; }
+.cta.ghost { background:transparent; border:1px solid #555; color:#e0e0e0; }
+.note { text-align:center; color:#888; font-size:13px; margin-top:30px; }
+.info-box { background:#1e1e1e; border:1px solid #00bcd4; border-radius:8px; padding:15px; margin-top:20px; font-size:13px; text-align:center; }
+@media (max-width:700px) { .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header class="header"><a href="index.html">← Retour à HAK IA Studio</a></header>
+<div class="wrap">
+    <h1>Choisissez votre plan</h1>
+    <p style="text-align:center; color:#aaa;">Traitement 100% local. Annulez à tout moment.</p>
+
+    <div class="grid">
+        <div class="card">
+            <h2>Gratuit</h2>
+            <div class="price">0 $ <span>/ mois</span></div>
+            <ul>
+                <li>Fusion (2 vidéos max)</li>
+                <li>Qualité 720p</li>
+                <li>1 export par jour</li>
+                <li>Filigrane HAK IA</li>
+                <li class="no">Sans filigrane</li>
+                <li class="no">Exports illimités</li>
+            </ul>
+            <a href="index.html" class="cta ghost">Commencer gratuitement</a>
+        </div>
+
+        <div class="card featured">
+            <h2>Creator</h2>
+            <div class="price">10 $ <span>/ mois</span></div>
+            <ul>
+                <li>Fusion illimitée</li>
+                <li>Qualité 1080p+</li>
+                <li>Exports illimités</li>
+                <li>Sans filigrane</li>
+                <li>Texte et audio avancés</li>
+                <li>Support prioritaire</li>
+            </ul>
+            <!-- Remplacer VOTRE_LIEN par votre vrai Stripe Payment Link -->
+            <a id="stripeLink" href="https://buy.stripe.com/VOTRE_LIEN" class="cta" target="_blank" rel="noopener">S'abonner à 10 $/mois</a>
+            <div class="info-box" id="linkStatus">Connectez-vous d'abord pour lier l'abonnement à votre compte.</div>
+        </div>
+    </div>
+
+    <p class="note">Après paiement, votre accès Creator est activé sous 24h (ou immédiatement si le webhook est configuré).</p>
+</div>
+
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const SUPABASE_URL = 'https://VOTRE_PROJET.supabase.co';
+    const SUPABASE_ANON_KEY = 'VOTRE_ANON_KEY';
+    const configured = !SUPABASE_URL.includes('VOTRE_');
+
+    if (configured) {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data: { session } } = await supabase.auth.getSession();
+        const link = document.getElementById('stripeLink');
+        const status = document.getElementById('linkStatus');
+
+        if (session) {
+            // On pré-remplit l'email sur la page Stripe
+            const base = link.href.split('?')[0];
+            link.href = `${base}?prefilled_email=${encodeURIComponent(session.user.email)}`;
+            status.textContent = `Vous êtes connecté en tant que ${session.user.email}.`;
+        } else {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('Connectez-vous d\'abord sur la page d\'accueil, puis revenez ici.');
+                window.location.href = 'index.html';
+            });
+        }
+    }
+</script>
+</body>
+</html>

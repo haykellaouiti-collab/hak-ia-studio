@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAK IA Studio — Montage vidéo local et privé</title>
+<meta name="description" content="Fusionnez, mixez et personnalisez vos vidéos dans votre navigateur. 100% local.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+<style>
+:root { --bg:#121212; --surface:#1e1e1e; --border:#333; --text:#e0e0e0; --muted:#aaa; --accent:#00bcd4; --success:#4caf50; --error:#ff5252; }
+* { box-sizing: border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inter','Segoe UI',sans-serif; margin:0; padding:0; display:flex; flex-direction:column; min-height:100vh; }
+@font-face { font-family:'Inter'; src:url('fonts/Inter-Regular.ttf') format('truetype'); font-weight:400; font-display:swap; }
+.header { background:var(--surface); padding:15px 30px; border-bottom:2px solid var(--accent); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+.header h1 { margin:0; color:var(--accent); font-size:24px; }
+.header nav { display:flex; gap:15px; align-items:center; }
+.header nav a { color:var(--muted); text-decoration:none; font-size:14px; }
+.header nav a:hover { color:var(--accent); }
+.badge { background:#555; color:#fff; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold; }
+.badge.premium { background:var(--accent); color:#000; }
+.container { flex:1; padding:20px; display:flex; gap:20px; max-width:1400px; margin:0 auto; width:100%; }
+.main-content { flex:1; background:var(--surface); padding:25px; border-radius:8px; }
+.sidebar { width:300px; background:#181818; padding:20px; border-radius:8px; border:1px solid var(--border); }
+.tabs { display:flex; gap:10px; margin-bottom:20px; }
+.tab-btn { flex:1; background:#2c2c2c; color:#fff; border:none; padding:12px; cursor:pointer; border-radius:4px; font-weight:bold; transition:0.2s; }
+.tab-btn.active { background:var(--accent); color:#000; }
+.form-group { margin-bottom:18px; }
+label { display:block; margin-bottom:6px; font-weight:bold; color:var(--muted); font-size:14px; }
+input[type="file"], input[type="text"], input[type="email"], select { width:100%; padding:11px; background:#2c2c2c; border:1px solid #444; color:#fff; border-radius:4px; font-size:14px; }
+button.action { background:var(--accent); color:#000; border:none; padding:13px 20px; font-weight:bold; border-radius:4px; cursor:pointer; width:100%; font-size:16px; transition:0.2s; margin-top:8px; }
+button.action:hover:not(:disabled) { background:#008ba3; }
+button.action:disabled { background:#555; color:#888; cursor:not-allowed; }
+.log-box { background:#000; color:#4caf50; font-family:monospace; padding:10px; border-radius:4px; height:160px; overflow-y:auto; font-size:12px; margin-top:20px; border:1px solid var(--border); white-space:pre-wrap; }
+.success-msg { color:var(--success); font-weight:bold; margin-top:15px; }
+.error-msg { color:var(--error); font-weight:bold; margin-top:15px; }
+.info-msg { color:var(--accent); font-weight:bold; margin-top:15px; font-size:13px; }
+.hidden { display:none !important; }
+video, audio { width:100%; margin-top:10px; border-radius:4px; }
+.download-link { display:inline-block; background:var(--success); color:#fff; padding:11px 18px; text-decoration:none; border-radius:4px; margin-top:15px; font-weight:bold; }
+.progress-wrap { margin-top:15px; }
+progress { width:100%; height:18px; border-radius:9px; overflow:hidden; }
+progress::-webkit-progress-bar { background:#2c2c2c; }
+progress::-webkit-progress-value { background:var(--accent); }
+.watermark-note { font-size:12px; color:var(--muted); margin-top:8px; }
+/* Modal */
+.modal { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:1000; }
+.modal-content { background:var(--surface); padding:30px; border-radius:12px; max-width:420px; width:90%; position:relative; border:1px solid var(--accent); }
+.modal-close { position:absolute; top:10px; right:15px; background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; }
+.modal-content h2 { margin-top:0; color:var(--accent); }
+.modal-content p { font-size:13px; color:var(--muted); }
+.divider { display:flex; align-items:center; gap:10px; margin:20px 0; color:var(--muted); font-size:12px; }
+.divider::before, .divider::after { content:""; flex:1; height:1px; background:var(--border); }
+@media (max-width:768px) { .container { flex-direction:column; } .sidebar { width:100%; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+    <h1>🎬 HAK IA Studio</h1>
+    <nav>
+        <a href="pricing.html">Tarifs</a>
+        <span id="authStatus" class="badge">Gratuit</span>
+        <button id="btnAuth" class="tab-btn" style="width:auto; padding:8px 16px; font-size:13px;">Connexion</button>
+    </nav>
+</header>
+
+<div class="container">
+    <main class="main-content">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="fusion">Fusion</button>
+            <button class="tab-btn" data-tab="mix">Texte & Audio</button>
+        </div>
+
+        <section id="tab-fusion">
+            <h2>Fusion de vidéos</h2>
+            <p style="color:var(--muted); font-size:14px;">Assemblez plusieurs clips. Ré-encodage automatique.</p>
+            <div class="form-group">
+                <label>Vidéos sources <span id="limitFusion" style="color:var(--muted); font-weight:normal;"></span></label>
+                <input type="file" id="vidFiles" multiple accept="video/*">
+            </div>
+            <button id="btnFusion" class="action">Lancer la fusion</button>
+            <div id="result-fusion"></div>
+        </section>
+
+        <section id="tab-mix" class="hidden">
+            <h2>Texte & Audio</h2>
+            <p style="color:var(--muted); font-size:14px;">Incrustez un texte et/ou ajoutez une musique.</p>
+            <div class="form-group">
+                <label>Vidéo cible</label>
+                <input type="file" id="vidTarget" accept="video/*">
+            </div>
+            <div class="form-group">
+                <label>Audio (MP3/WAV) — optionnel</label>
+                <input type="file" id="audioTarget" accept="audio/*">
+            </div>
+            <div class="form-group">
+                <label>Texte à incruster — optionnel</label>
+                <input type="text" id="overlayText" placeholder="Ex : HAK IA Studio">
+            </div>
+            <div class="form-group">
+                <label>Position</label>
+                <select id="textPos">
+                    <option value="center">Au centre</option>
+                    <option value="bottom">En bas</option>
+                    <option value="top">En haut</option>
+                </select>
+            </div>
+            <button id="btnMix" class="action">Lancer le traitement</button>
+            <div id="result-mix"></div>
+        </section>
+
+        <div class="progress-wrap hidden" id="progressWrap">
+            <progress id="progressBar" value="0" max="100"></progress>
+            <span id="progressLabel" style="font-size:12px; color:var(--muted);"></span>
+        </div>
+        <div class="log-box" id="logBox">Prêt.</div>
+    </main>
+
+    <aside class="sidebar">
+        <h3>Pourquoi HAK IA ?</h3>
+        <p style="font-size:13px; color:var(--muted); line-height:1.6;">
+            🔒 <b>100% local</b> — vos fichiers ne quittent jamais votre appareil.<br><br>
+            ⚡ <b>Multi-thread</b> — accéléré par WebAssembly.<br><br>
+            💎 <b>Plan Creator</b> — exports illimités, 1080p, sans filigrane.
+        </p>
+        <hr style="border-color:var(--border); margin:20px 0;">
+        <div id="previewArea"></div>
+        <div id="watermarkNotice" class="watermark-note">Le plan gratuit applique un filigrane et limite à 720p.</div>
+    </aside>
+</div>
+
+<!-- Modal de connexion -->
+<div id="loginModal" class="modal hidden">
+    <div class="modal-content">
+        <button class="modal-close" id="closeLogin">×</button>
+        <h2>Connexion</h2>
+        <p>Recevez un lien de connexion par email — pas de mot de passe.</p>
+        <input type="email" id="loginEmail" placeholder="votre@email.com" style="margin-bottom:10px;">
+        <button class="action" id="btnMagicLink">Envoyer le lien</button>
+        <div id="loginMsg"></div>
+        <div class="divider">ou</div>
+        <button class="tab-btn" id="btnGoogle" style="width:100%; padding:12px;">Continuer avec Google</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js" crossorigin></script>
+<script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/util.js" crossorigin></script>
+<script src="app.js"></script>
+<script type="module" src="auth.js"></script>
+</body>
+</html>
