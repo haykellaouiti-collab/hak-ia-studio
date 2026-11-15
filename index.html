@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HAK IA Studio Ultimate Pro</title>
+<script>try{var t=localStorage.getItem('fvs_theme');if(!t&&matchMedia('(prefers-color-scheme: light)').matches)t='light';document.documentElement.dataset.theme=t||'dark';}catch(e){}</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -12,7 +13,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;transition:background .25s,color .25s}
 h1,h2,h3{margin:0}
-a{color:var(--accent);text-decoration:none}
+a{color:var(--accent)}
 .hide{display:none!important}
 .sticky-top{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px}
@@ -20,8 +21,8 @@ a{color:var(--accent);text-decoration:none}
 .logo{width:40px;height:40px;border-radius:12px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent);background:var(--card);box-shadow:0 0 18px rgba(6,182,212,.3)}
 .brand-t{font-weight:800;color:var(--accent);letter-spacing:.3px}
 .brand-s{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted)}
-.badge { background:#555; color:#fff; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold; transition: 0.3s; }
-.badge.premium { background:var(--accent); color:#000; box-shadow: 0 0 10px var(--accent); }
+.badge { background:#555; color:#fff; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold; }
+.badge.premium { background:var(--accent); color:#000; }
 .tabs{display:flex;gap:6px;padding:6px 16px 10px;overflow-x:auto;scrollbar-width:thin}
 .tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);border-bottom:3px solid var(--accent2);background:var(--card);color:var(--muted);font:600 12px system-ui,sans-serif;cursor:pointer;white-space:nowrap;transition:transform .12s,color .12s}
 .tab:hover{color:var(--accent);transform:translateY(-1px)}
@@ -41,7 +42,8 @@ a{color:var(--accent);text-decoration:none}
 .grid{display:grid;gap:16px;align-items:start}
 .cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:900px){.cols-2,.cols-3{grid-template-columns:1fr}}
+.guide-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media(max-width:900px){.cols-2,.cols-3{grid-template-columns:1fr}.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .row.between{justify-content:space-between}
 .muted{color:var(--muted)}
@@ -51,9 +53,14 @@ a{color:var(--accent);text-decoration:none}
 .empty{padding:18px;text-align:center;color:var(--muted);font-size:12px;background:var(--panel);border:1px dashed var(--border);border-radius:12px}
 .lbl{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
 .field{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font:inherit}
+.field.sm{padding:5px 8px;font-size:12px}
 .field:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+textarea.field{resize:vertical;min-height:80px}
 input[type=file]{width:100%;font-size:12px;color:var(--muted)}
 input[type=file]::file-selector-button{margin-right:10px;padding:7px 12px;border:0;border-radius:8px;background:var(--accent2);color:#fff;font-weight:600;cursor:pointer}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox],input[type=radio]{accent-color:var(--accent)}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--accent);border-bottom:4px solid var(--accent-dark);background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font:700 13px system-ui,sans-serif;cursor:pointer;text-shadow:0 1px 2px rgba(0,0,0,.35);transition:transform .12s,filter .12s}
 .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .btn:active{transform:translateY(2px);border-bottom-width:1px}
@@ -62,25 +69,44 @@ input[type=file]::file-selector-button{margin-right:10px;padding:7px 12px;border
 .btn-sm{padding:6px 10px;font-size:12px;border-radius:9px;border-bottom-width:3px}
 .btn-ghost{background:var(--panel);color:var(--text);border-color:var(--border);border-bottom-color:var(--accent2);text-shadow:none}
 .btn-danger{background:transparent;color:var(--danger);border-color:rgba(248,113,113,.45);border-bottom-width:1px;text-shadow:none}
+.btn-ok{background:linear-gradient(180deg,#10b981,#059669);border-color:#34d399;border-bottom-color:#047857}
 .bar{height:10px;border-radius:99px;background:var(--panel);border:1px solid var(--border);overflow:hidden}
 .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#3b82f6);transition:width .25s}
 .status{font-size:12px;padding:8px 10px;border-radius:9px;background:var(--panel);border:1px solid var(--border);color:var(--muted);word-break:break-word}
+.status.strong{color:var(--accent);font-weight:700}
 .player{width:100%;max-height:300px;background:#000;border-radius:12px;border:1px solid var(--border);object-fit:contain;display:block}
+canvas.player{height:auto}
 .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:var(--panel);border:1px solid var(--border);border-radius:10px;font-size:13px}
 .item a,.item span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .stack>*+*{margin-top:8px}
 .diag{list-style:none;margin:0;padding:0;font-size:13px}
 .diag li{padding:3px 0}
 .diag .ok i{color:var(--ok)}.diag .ko i{color:var(--danger)}
+.clip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
+.clip-head{display:flex;gap:8px;align-items:center;font-size:12px}
+.clip-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--accent);font-weight:600}
+.clip-ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:8px}
+.clip-ctrl label{font-size:11px;color:var(--muted);width:78px}
+.res-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
+.res-card .t{font-size:13px;font-weight:600}
+.res-card p{white-space:pre-line;font-size:13px;margin:6px 0 0}
+.chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--border);background:var(--panel);color:var(--muted)}
+.tag{display:inline-block;padding:3px 8px;margin:2px;border-radius:8px;background:var(--panel);border:1px solid var(--border);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600}
+.guide-btn{display:flex;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid var(--border);border-bottom:3px solid var(--accent2);background:var(--panel);color:var(--text);font:600 12px system-ui,sans-serif;text-align:left;cursor:pointer}
+.guide-btn.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;border-color:var(--accent)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
 .modal.open{display:flex}
-.modal .card{max-width:420px;width:100%;}
+.modal .card{max-width:520px;width:100%;max-height:92vh;overflow:auto}
 #toast-notification{position:fixed;bottom:20px;right:20px;max-width:min(90vw,380px);background:var(--card);color:var(--text);border:1px solid var(--accent);border-radius:12px;padding:12px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;transform:translateY(90px);opacity:0;transition:all .3s;z-index:200;pointer-events:none}
 #toast-notification.show{transform:none;opacity:1}
 #toast-notification[data-type=error]{border-color:var(--danger)}
 #toast-notification[data-type=error] i{color:var(--danger)}
 #toast-notification i{color:var(--accent)}
 footer{border-top:1px solid var(--border);padding:14px;text-align:center;font-size:12px;color:var(--muted)}
+body.busy .tab{opacity:.85}
 @media(max-width:600px){.brand-s{display:none}.hero h1{font-size:19px}}
 </style>
 </head>
@@ -93,79 +119,157 @@ footer{border-top:1px solid var(--border);padding:14px;text-align:center;font-si
       <div><div class="brand-t">HAK IA Studio</div><div class="brand-s">ULTIMATE PRO</div></div>
     </div>
     <div class="row">
-      <a href="pricing.html" class="btn btn-ghost btn-sm">Tarifs</a>
+      <a href="pricing.html" class="btn btn-ghost btn-sm" style="text-decoration:none">Tarifs</a>
       <span id="authStatus" class="badge">Gratuit</span>
       <button id="btnAuth" class="btn btn-ghost btn-sm"><i class="fa-solid fa-user"></i> Connexion</button>
-      <button class="btn btn-ghost btn-sm" id="themeBtn" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i></button>
+      <button class="btn btn-ghost btn-sm" id="themeBtn" onclick="toggleTheme()" aria-label="Changer de thème"><i class="fa-solid fa-sun"></i> <span id="themeBtnText">Mode Jour</span></button>
     </div>
   </header>
-  <nav id="tabs" class="tabs" role="tablist"></nav>
+  <nav id="tabs" class="tabs" role="tablist" aria-label="Modules de la plateforme"></nav>
 </div>
 
 <main class="wrap">
+
 <!-- 1. ACCUEIL -->
-<section id="tab-1" class="pane active">
+<section id="tab-1" class="pane active" role="tabpanel">
   <div class="card hero">
     <h1>HAK IA Studio Ultimate Pro</h1>
-    <p class="muted">Suite de production vidéo 100% locale. Traitement sécurisé dans votre navigateur.</p>
+    <p class="muted">Suite de production : scripts IA, montage vidéo, mixage audio, conversion et préparation de diffusion. Le traitement des fichiers se fait dans votre navigateur et rien n'est envoyé à un serveur.</p>
   </div>
   <div class="grid cols-2">
     <div class="card">
       <h2><i class="fa-solid fa-stethoscope"></i> Diagnostic du navigateur</h2>
       <ul id="diag-list" class="diag"></ul>
+      <div id="diag-format" class="small muted"></div>
     </div>
     <div class="card">
-      <h2><i class="fa-solid fa-circle-info"></i> Guide des modules</h2>
-      <div id="guide-grid" class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px;"></div>
-      <div id="guide-display" class="box" style="margin-top:10px"></div>
+      <h2><i class="fa-solid fa-box-archive"></i> Sauvegarde des données</h2>
+      <p class="small muted">Exportez vos liens, scripts, outils et manifeste dans un fichier, ou restaurez-les sur un autre appareil.</p>
+      <div class="row">
+        <button class="btn btn-sm" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Exporter</button>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer"><i class="fa-solid fa-upload"></i> Restaurer<input type="file" accept="application/json,.json" class="hide" onchange="importBackup(this)"></label>
+      </div>
     </div>
+  </div>
+  <div class="card">
+    <h2><i class="fa-solid fa-bookmark"></i> Bloc-notes de liens &amp; inspiration</h2>
+    <div class="row" style="flex-wrap:nowrap">
+      <input type="text" id="video-url-input" class="field" placeholder="Collez un lien ou une idée..." onkeydown="if(event.key==='Enter')enregistrerLienInspiration()">
+      <button class="btn" onclick="enregistrerLienInspiration()">Mémoriser</button>
+    </div>
+    <div id="saved-links-container" class="stack"></div>
+  </div>
+  <div class="card">
+    <h2><i class="fa-solid fa-circle-info"></i> Guide des 10 modules</h2>
+    <div id="guide-grid" class="grid guide-grid"></div>
+    <div id="guide-display" class="box"></div>
   </div>
 </section>
 
 <!-- 2. IA & SCRIPTS -->
-<section id="tab-2" class="pane">
+<section id="tab-2" class="pane" role="tabpanel">
   <div class="card">
-    <h2><i class="fa-solid fa-brain"></i> Générateur IA</h2>
-    <p class="muted small">Générez des scripts viraux et des idées de titres.</p>
-    <div class="box">
-      <input type="text" id="script-topic" class="field" placeholder="Sujet de la vidéo...">
-      <button class="btn block" onclick="showToast('Génération simulée. Connectez une API IA pour la version finale.')">Générer le script</button>
+    <div class="row between">
+      <h2><i class="fa-solid fa-brain"></i> Générateur IA &amp; scripts viraux</h2>
+      <div class="row">
+        <button id="script-nav-dashboard" class="btn btn-sm" onclick="switchScriptSubTab('dashboard')">Générateur</button>
+        <button id="script-nav-saved" class="btn btn-ghost btn-sm" onclick="switchScriptSubTab('saved')">Sauvegardes (<span id="script-saved-count">0</span>)</button>
+      </div>
+    </div>
+    <div id="script-view-dashboard" class="stack">
+      <div class="box">
+        <div class="grid cols-3">
+          <div><label class="lbl">Moteur</label>
+            <select id="ai-provider" class="field" onchange="onProviderChange()">
+              <option value="local">Moteur local</option>
+              <option value="gemini">Google Gemini</option>
+              <option value="groq">Groq</option>
+            </select></div>
+          <div style="grid-column:span 2"><label class="lbl">Clé API</label>
+            <input type="password" id="custom-ai-key" class="field" placeholder="Optionnel" oninput="saveKey()"></div>
+        </div>
+      </div>
+      <div><label class="lbl">Sujet principal</label>
+        <input type="text" id="script-video-topic" class="field" placeholder="Ex : usinage CNC..." onkeydown="if(event.key==='Enter')generateScriptContent()"></div>
+      <div class="grid cols-2">
+        <div><label class="lbl">Ton</label>
+          <select id="script-video-tone" class="field">
+            <option value="dynamique">Dynamique</option>
+            <option value="professionnel">Professionnel</option>
+            <option value="humoristique">Humoristique</option>
+            <option value="misterieux">Mystérieux</option>
+          </select></div>
+        <div><label class="lbl">Plateforme</label>
+          <select id="script-video-platform" class="field">
+            <option value="youtube">YouTube</option>
+            <option value="shorts">Shorts / TikTok</option>
+            <option value="instagram">Reel</option>
+          </select></div>
+      </div>
+      <div class="row" style="flex-wrap:nowrap">
+        <button id="script-generate-btn" class="btn block" onclick="generateScriptContent()"><i class="fa-solid fa-wand-magic-sparkles"></i> Générer</button>
+      </div>
+      <div id="script-loading-state" class="hide status" style="text-align:center">Création en cours…</div>
+      <div id="script-results-section" class="hide stack">
+        <div class="box"><h3>Titres</h3><div id="script-titles-container" class="stack"></div></div>
+        <div class="box"><h3>Script</h3><div id="script-detail-container" class="stack"></div></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 3. TÉLÉCHARGER & MP3 -->
-<section id="tab-3" class="pane">
-  <div class="card">
-    <h2><i class="fa-solid fa-cloud-arrow-down"></i> Convertisseur MP3</h2>
-    <p class="muted small">Extrayez l'audio de vos vidéos au format MP3.</p>
-    <input type="file" id="mp3-input" accept="video/*,audio/*" class="field">
-    <button class="btn block" onclick="showToast('Conversion MP3 en cours de développement...')">Extraire l'audio</button>
+<!-- 3. MP3 -->
+<section id="tab-3" class="pane" role="tabpanel">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2><i class="fa-solid fa-file-export"></i> Convertisseur local</h2>
+      <input type="file" id="pc-video-input" accept="video/*,audio/*" onchange="onConvPicked(this)">
+      <select id="conversion-format" class="field">
+        <option value="mp3">Audio MP3</option>
+        <option value="wav">Audio WAV</option>
+      </select>
+      <button id="conv-run-btn" class="btn block" onclick="runConversion()">Lancer</button>
+      <div class="bar" id="conv-bar"><i></i></div>
+    </div>
+    <div class="card">
+      <h2><i class="fa-solid fa-circle-play"></i> Aperçu</h2>
+      <video id="preview-player" class="player" controls></video>
+      <div id="status-msg" class="status">En attente...</div>
+      <div id="download-zone" class="hide"><a id="download-btn-accueil" class="btn">Télécharger</a></div>
+    </div>
   </div>
 </section>
 
-<!-- 4. STUDIO ASSEMBLAGE (LE COEUR) -->
-<section id="tab-4" class="pane">
+<!-- 4. STUDIO ASSEMBLAGE -->
+<section id="tab-4" class="pane" role="tabpanel">
   <div class="grid cols-2">
     <div class="card">
-      <h2><i class="fa-solid fa-layer-group"></i> Studio d'assemblage</h2>
+      <h2><i class="fa-solid fa-layer-group"></i> Studio</h2>
       <div class="box">
-        <label class="lbl">Ajouter des vidéos</label>
         <input type="file" id="real-videos-input" accept="video/*" multiple onchange="onClipsPicked(this)">
-        <div class="row between">
-          <div id="sum-formula-display" class="small" style="color:var(--accent);font-weight:700">Somme : en attente…</div>
-          <button class="btn btn-danger btn-sm" onclick="clearClips()">Vider</button>
-        </div>
+        <div class="row between"><div id="sum-formula-display" class="small" style="color:var(--accent);font-weight:700">Somme : en attente…</div>
+          <button class="btn btn-danger btn-sm" onclick="clearClips()">Vider</button></div>
         <div id="clips-list" class="stack" style="max-height:340px;overflow:auto"></div>
       </div>
       <div class="box">
+        <div class="grid cols-3">
+          <div><label class="lbl">Format</label><select id="output-ratio" class="field"><option value="16:9">16:9</option><option value="9:16">9:16</option></select></div>
+          <div><label class="lbl">Résolution</label><select id="output-res" class="field"><option value="720" selected>720p</option><option value="1080">1080p</option></select></div>
+          <div><label class="lbl">Cadrage</label><select id="fit-mode" class="field"><option value="contain">Entière</option><option value="cover">Remplir</option></select></div>
+        </div>
         <div class="grid cols-2">
-          <div><label class="lbl">Texte (Optionnel)</label><input type="text" id="watermark-text" class="field" placeholder="Mon texte..."></div>
-          <div><label class="lbl">Position</label><select id="text-pos" class="field"><option value="bottom-right">Bas droite</option><option value="bottom-left">Bas gauche</option></select></div>
+          <div><label class="lbl">Filtre</label><select id="video-filter" class="field"><option value="none">Aucun</option><option value="grayscale(100%)">Gris</option></select></div>
+          <label class="check" style="align-self:end"><input type="checkbox" id="fade-clips" checked> Fondu</label>
+        </div>
+      </div>
+      <div class="box">
+        <div class="grid cols-2">
+          <div><label class="lbl">Texte</label><input type="text" id="watermark-text" class="field" placeholder="Mon texte..."></div>
+          <div><label class="lbl">Position</label><select id="text-pos" class="field"><option value="bottom-left">Bas G</option><option value="bottom-right">Bas D</option></select></div>
         </div>
       </div>
       <div class="row" style="flex-wrap:nowrap">
-        <button id="studio-run-btn" class="btn block" onclick="runStudio()"><i class="fa-solid fa-film"></i> Lancer l'assemblage</button>
+        <button id="studio-run-btn" class="btn block" onclick="runStudio()">Lancer l'assemblage</button>
         <button id="studio-cancel-btn" class="btn btn-danger hide" onclick="cancelJob()">Annuler</button>
       </div>
       <div class="bar" id="studio-bar"><i></i></div>
@@ -177,49 +281,38 @@ footer{border-top:1px solid var(--border);padding:14px;text-align:center;font-si
       <div id="studio-empty" class="empty">Le rendu apparaîtra ici.</div>
       <div id="line1-status" class="status">Ligne 1 : en attente…</div>
       <div id="line2-status" class="status strong">Ligne 2 : prêt</div>
-      <div id="download-zone-cf" class="hide" style="margin-top:10px"><a id="download-btn-cf" class="btn" download="video.webm">⬇️ Télécharger</a></div>
+      <div id="download-zone-cf" class="hide"><a id="download-btn-cf" class="btn">Télécharger</a></div>
     </div>
   </div>
 </section>
 
-<!-- MODULES RESTANTS (Placeholders) -->
-<section id="tab-5" class="pane"><div class="card"><h2>Découpe</h2><p class="muted">Module en cours de finalisation.</p></div></section>
-<section id="tab-6" class="pane"><div class="card"><h2>Mixeur Audio</h2><p class="muted">Module en cours de finalisation.</p></div></section>
-<section id="tab-7" class="pane"><div class="card"><h2>Vitesse</h2><p class="muted">Module en cours de finalisation.</p></div></section>
-<section id="tab-8" class="pane"><div class="card"><h2>Gestion HAK</h2><p class="muted">Module en cours de finalisation.</p></div></section>
-<section id="tab-9" class="pane"><div class="card"><h2>Convertisseurs</h2><p class="muted">Module en cours de finalisation.</p></div></section>
-<section id="tab-10" class="pane"><div class="card"><h2>Hub Social</h2><p class="muted">Module en cours de finalisation.</p></div></section>
-
-</main>
-
-<!-- MODAL CONNEXION -->
+<!-- MODALES DE CONNEXION ET PARTAGE -->
 <div id="loginModal" class="modal">
   <div class="card" style="position:relative">
     <button class="btn btn-ghost btn-sm" style="position:absolute;top:10px;right:10px;" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
     <h2>Connexion</h2>
-    <p class="small muted">Recevez un lien de connexion magique par email.</p>
+    <p class="small muted">Recevez un lien magique par email.</p>
     <input type="email" id="loginEmail" class="field" placeholder="votre@email.com" style="margin-bottom:10px;">
     <button class="btn block" onclick="loginMagicLink()">Envoyer le lien</button>
     <div id="loginMsg" class="small" style="margin-top:10px;text-align:center;"></div>
   </div>
 </div>
 
-<div id="toast-notification"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
-<footer>HAK IA Studio Ultimate Pro · Traitement local dans le navigateur</footer>
+<div id="toast-notification" role="status" aria-live="polite"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
+<footer>HAK IA Studio Ultimate Pro · Traitement 100% local</footer>
 
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
 
 // ==========================================
-// 1. AUTHENTIFICATION SUPABASE
+// 1. SUPABASE AUTHENTIFICATION
 // ==========================================
 const SUPABASE_URL = 'https://gxjhkjpxpahgoiezdzxl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4amhranB4cGFoZ29pZXpkenhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NTU2NzIsImV4cCI6MjExMDMzMTY3Mn0.yL2PldZ4b9KFC9DzXPBwti-CQnpNLPKD1wUHhDWcr1c';
 
-// Correction du conflit de nom : supabaseClient au lieu de supabase
+// Correction du conflit : supabaseClient
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 let isPremium = false;
 
 window.openLogin = () => $('loginModal').classList.add('open');
@@ -246,6 +339,7 @@ async function checkUser() {
         return;
     }
     
+    // Vérification de la table 'subscriptions'
     const { data } = await supabaseClient.from('subscriptions').select('status').eq('user_id', session.user.id).maybeSingle();
     isPremium = (data?.status === 'active' || data?.status === 'trialing');
     
@@ -271,12 +365,12 @@ function updateUI(badgeText, btnText, premium) {
 supabaseClient.auth.onAuthStateChange(() => checkUser());
 checkUser();
 
-
 // ==========================================
 // 2. UI & NAVIGATION
 // ==========================================
 function applyTheme(t) { 
     document.documentElement.dataset.theme = t; 
+    $('themeBtnText').textContent = t === 'dark' ? 'Mode Jour' : 'Mode Nuit';
     $('themeBtn').querySelector('i').className = 'fa-solid ' + (t === 'dark' ? 'fa-sun' : 'fa-moon'); 
 }
 window.toggleTheme = () => { 
@@ -290,70 +384,30 @@ const TABS = [
   { id: 2, icon: 'fa-brain', label: 'IA Scripts' },
   { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3' },
   { id: 4, icon: 'fa-layer-group', label: 'Assemblage' },
-  { id: 5, icon: 'fa-scissors', label: 'Découpe' },
-  { id: 6, icon: 'fa-sliders', label: 'Mixeur' },
-  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse' },
-  { id: 8, icon: 'fa-folder-tree', label: 'Gestion' },
-  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs' },
-  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social' }
+  // (Autres onglets masqués pour cette version simplifiée, mais tu peux les rajouter)
 ];
-
 function buildNav() {
   $('tabs').innerHTML = TABS.map(t => `<button class="tab" role="tab" id="nav-${t.id}" data-tab="${t.id}"><i class="fa-solid ${t.icon}"></i><span>${t.label}</span></button>`).join('');
-  $('tabs').addEventListener('click', e => { 
-      const b = e.target.closest('[data-tab]'); 
-      if (b) switchTab(b.dataset.tab); 
-  });
+  $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) switchTab(b.dataset.tab); });
 }
-
 window.switchTab = (id) => {
-  id = +id; 
-  TABS.forEach(t => { 
+  id = +id; TABS.forEach(t => { 
       const pane = $('tab-' + t.id); if(pane) pane.classList.toggle('active', t.id === id); 
       const b = $('nav-' + t.id); if(b) b.setAttribute('aria-selected', String(t.id === id)); 
   });
   window.scrollTo({ top: 0 });
 };
-
-function buildGuide() {
-  $('guide-grid').innerHTML = TABS.map(t => `<button class="guide-btn" data-g="${t.id}" style="padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--panel);cursor:pointer"><i class="fa-solid ${t.icon}"></i> ${t.label}</button>`).join('');
-  $('guide-grid').addEventListener('click', e => { 
-      const b = e.target.closest('[data-g]'); 
-      if (b) showGuide(+b.dataset.g); 
-  });
-  showGuide(4); // Affiche l'assemblage par défaut
-}
-
-function showGuide(id) { 
-    const t = TABS.find(x => x.id === id); 
-    $('guide-display').innerHTML = `<h3><i class="fa-solid ${t.icon}"></i> ${t.label}</h3><p class="small muted">Module numéro ${id}. Cliquez sur l'onglet en haut pour l'ouvrir.</p>`; 
-}
-
-buildNav(); switchTab(1); buildGuide();
-
-function runDiagnostics() {
-  const checks = [
-      ['Enregistrement vidéo', !!window.MediaRecorder],
-      ['Capture canvas', !!HTMLCanvasElement.prototype.captureStream]
-  ];
-  $('diag-list').innerHTML = checks.map(([l, ok]) => `<li class="${ok ? 'ok' : 'ko'}"><i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> ${l}</li>`).join('');
-}
-runDiagnostics();
+buildNav(); switchTab(1);
 
 let toastT;
 window.showToast = (msg, type = 'ok') => {
-  const t = $('toast-notification'); 
-  $('toast-message').textContent = msg; 
-  t.dataset.type = type;
+  const t = $('toast-notification'); $('toast-message').textContent = msg; t.dataset.type = type;
   t.querySelector('i').className = 'fa-solid ' + (type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-check');
-  t.classList.add('show'); 
-  clearTimeout(toastT); 
-  toastT = setTimeout(() => t.classList.remove('show'), 3600);
+  t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3600);
 };
 
-
 // ==========================================
-// 3. MOTEUR VIDÉO (STUDIO)
+// 3. MOTEUR STUDIO (Le reste de ton code)
 // ==========================================
 let clips = [], clipSeq = 0, activeJob = null, currentStream = null;
 
@@ -370,19 +424,11 @@ async function getMeta(file) {
 }
 
 window.onClipsPicked = async (input) => {
-    const files = [...input.files]; 
-    if (!files.length) return;
-    
+    const files = [...input.files]; if (!files.length) return;
     $('sum-formula-display').textContent = 'Analyse…';
-    
     for (const f of files) {
-        try { 
-            const m = await getMeta(f); 
-            if (!isFinite(m.duration)) throw new Error('Durée invalide'); 
-            clips.push({ id: ++clipSeq, file: f, duration: m.duration }); 
-        } catch { 
-            showToast(`Fichier illisible : ${f.name}`, 'error'); 
-        }
+        try { const m = await getMeta(f); if (!isFinite(m.duration)) throw new Error('Durée invalide'); clips.push({ id: ++clipSeq, file: f, duration: m.duration }); } 
+        catch { showToast(`Fichier illisible : ${f.name}`, 'error'); }
     }
     input.value = '';
     renderClips();
@@ -392,7 +438,7 @@ window.clearClips = () => { clips = []; renderClips(); };
 
 function renderClips() {
     const box = $('clips-list');
-    box.innerHTML = clips.length ? clips.map((c, i) => `<div class="item"><span class="t">${i+1}. ${c.file.name}</span><span class="chip" style="background:var(--accent-dark);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px">${fmtT(c.duration)}</span></div>`).join('') : '<div class="empty">Aucun clip sélectionné.</div>';
+    box.innerHTML = clips.length ? clips.map((c, i) => `<div class="item"><span class="t">${i+1}. ${c.file.name}</span><span class="chip" style="background:var(--accent-dark);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px">${fmtT(c.duration)}</span></div>`).join('') : '<div class="empty">Aucun clip.</div>';
     const total = clips.reduce((s, c) => s + c.duration, 0);
     $('sum-formula-display').textContent = `Durée totale : ${fmtT(total)}`;
 }
@@ -406,7 +452,7 @@ window.cancelJob = () => {
 };
 
 function drawWatermark(ctx, cw, ch) {
-    if (isPremium) return; // Pas de filigrane si Premium
+    if (isPremium) return; // Si Premium, pas de filigrane
     const fs = Math.round(Math.min(cw, ch) * 0.05);
     ctx.font = `700 ${fs}px system-ui,sans-serif`;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
