@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HAK IA Studio Ultimate Pro</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#070b12;--card:#0f172a;--panel:#0b1324;--input:#060a14;--border:#1e3a5f;--text:#f1f5f9;--muted:#93a4bd;--accent:#06b6d4;--accent2:#0891b2;--accent-dark:#155e75;--on-accent:#fff;--danger:#f87171;--ok:#34d399;--warn:#fbbf24;--shadow:0 10px 30px rgba(0,0,0,.35);color-scheme:dark}
 [data-theme=light]{--bg:#eef4fb;--card:#fff;--panel:#f1f5f9;--input:#fff;--border:#c7d6e8;--text:#0f172a;--muted:#475569;--accent:#0284c7;--accent2:#0369a1;--accent-dark:#075985;--danger:#dc2626;--ok:#059669;--warn:#b45309;--shadow:0 10px 30px rgba(15,23,42,.12);color-scheme:light}
@@ -114,7 +115,7 @@ body.busy .tab{opacity:.85}
     <div class="row">
       <a href="pricing.html" class="btn btn-ghost btn-sm" style="text-decoration:none">Tarifs</a>
       <span id="authStatus" class="badge">Gratuit</span>
-      <button id="btnAuth" class="btn btn-ghost btn-sm" onclick="openLogin()"><i class="fa-solid fa-user"></i> Connexion</button>
+      <button id="btnAuth" class="btn btn-ghost btn-sm"><i class="fa-solid fa-user"></i> Connexion</button>
       <button class="btn btn-ghost btn-sm" id="themeBtn" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i></button>
     </div>
   </header>
@@ -126,9 +127,8 @@ body.busy .tab{opacity:.85}
 <section id="tab-1" class="pane active" role="tabpanel">
   <div class="card hero">
     <h1>HAK IA Studio Ultimate Pro</h1>
-    <p class="muted">Suite de production : scripts IA, montage vidéo, mixage audio, conversion et préparation de diffusion. Le traitement des fichiers se fait dans votre navigateur et rien n'est envoyé à un serveur.</p>
+    <p class="muted">Suite de production : scripts IA, montage vidéo, mixage audio, conversion et préparation de diffusion. Traitement 100% local.</p>
   </div>
-  
   <div class="grid cols-2">
     <div class="card">
       <h2><i class="fa-solid fa-stethoscope"></i> Diagnostic du navigateur</h2>
@@ -138,6 +138,95 @@ body.busy .tab{opacity:.85}
       <h2><i class="fa-solid fa-circle-info"></i> Guide des 10 modules</h2>
       <div id="guide-grid" class="grid guide-grid"></div>
       <div id="guide-display" class="box" style="margin-top:10px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. IA & SCRIPTS -->
+<section id="tab-2" class="pane" role="tabpanel">
+  <div class="card">
+    <div class="row between">
+      <h2><i class="fa-solid fa-brain"></i> Générateur IA &amp; scripts viraux</h2>
+    </div>
+    <div id="script-view-dashboard" class="stack">
+      <div class="box">
+        <div class="grid cols-3">
+          <div><label class="lbl" for="ai-provider">Moteur</label>
+            <select id="ai-provider" class="field" onchange="onProviderChange()">
+              <option value="local">Moteur local (gratuit, sans clé)</option>
+              <option value="gemini">Google Gemini (clé API)</option>
+              <option value="groq">Groq (clé API)</option>
+            </select></div>
+          <div style="grid-column:span 2"><label class="lbl" for="custom-ai-key">Clé API</label>
+            <input type="password" id="custom-ai-key" class="field" placeholder="Collez votre clé (optionnel)" autocomplete="off"></div>
+        </div>
+      </div>
+      <div><label class="lbl" for="script-video-topic">Sujet principal de la vidéo</label>
+        <input type="text" id="script-video-topic" class="field" placeholder="Ex : usinage CNC haute précision..." onkeydown="if(event.key==='Enter')generateScriptContent()"></div>
+      <div class="grid cols-2">
+        <div><label class="lbl" for="script-video-tone">Ton</label>
+          <select id="script-video-tone" class="field">
+            <option value="dynamique">Dynamique &amp; énergique</option>
+            <option value="professionnel">Professionnel &amp; technique / ASMR</option>
+            <option value="humoristique">Humoristique &amp; divertissant</option>
+            <option value="misterieux">Mystérieux &amp; captivant</option>
+          </select></div>
+        <div><label class="lbl" for="script-video-platform">Plateforme</label>
+          <select id="script-video-platform" class="field">
+            <option value="youtube">YouTube format long</option>
+            <option value="shorts">YouTube Shorts / TikTok</option>
+            <option value="instagram">Instagram Reel</option>
+          </select></div>
+      </div>
+      <div class="row" style="flex-wrap:nowrap">
+        <button id="script-generate-btn" class="btn block" onclick="generateScriptContent()"><i class="fa-solid fa-wand-magic-sparkles"></i> Générer titres, script et description</button>
+      </div>
+      <div id="script-loading-state" class="hide status" style="text-align:center"><i class="fa-solid fa-spinner fa-spin"></i> Création en cours…</div>
+      <div id="script-results-section" class="hide stack">
+        <div class="box"><h3>Titres recommandés</h3><div id="script-titles-container" class="stack"></div></div>
+        <div class="box">
+          <div class="row between"><h3>Structure du script</h3>
+            <div class="row">
+              <button class="btn btn-ghost btn-sm" onclick="copyFullScriptText()"><i class="fa-regular fa-copy"></i> Copier tout</button>
+              <button class="btn btn-sm" onclick="sendToSocial()"><i class="fa-solid fa-share-nodes"></i> Vers le Hub Social</button>
+            </div></div>
+          <div id="script-detail-container" class="stack"></div>
+        </div>
+        <div class="box"><h3>Description &amp; hashtags</h3><div id="script-meta-container" class="stack"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. TÉLÉCHARGER & MP3 -->
+<section id="tab-3" class="pane" role="tabpanel">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2><i class="fa-solid fa-file-export"></i> Convertisseur local</h2>
+      <p class="small muted">Extraction audio en MP3 (stéréo) ou WAV, ou vidéo WebM allégée.</p>
+      <div><label class="lbl" for="pc-video-input">Fichier vidéo ou audio</label>
+        <input type="file" id="pc-video-input" accept="video/*,audio/*" onchange="onConvPicked(this)"></div>
+      <div class="grid cols-2">
+        <div><label class="lbl" for="conversion-format">Format de sortie</label>
+          <select id="conversion-format" class="field">
+            <option value="mp3">Audio MP3</option>
+            <option value="wav">Audio WAV (sans perte)</option>
+            <option value="webm">Vidéo allégée (854 px)</option>
+          </select></div>
+        <div><label class="lbl" for="mp3-bitrate">Qualité MP3</label>
+          <select id="mp3-bitrate" class="field"><option value="128">128 kbit/s</option><option value="192" selected>192 kbit/s</option><option value="320">320 kbit/s</option></select></div>
+      </div>
+      <div class="row" style="flex-wrap:nowrap">
+        <button id="conv-run-btn" class="btn block" onclick="runConversion()">Lancer la conversion</button>
+      </div>
+      <div class="bar" id="conv-bar"><i></i></div>
+    </div>
+    <div class="card">
+      <h2><i class="fa-solid fa-circle-play"></i> Aperçu &amp; téléchargement</h2>
+      <video id="preview-player" class="player" controls></video>
+      <canvas id="conv-canvas" class="hide"></canvas>
+      <div id="status-msg" class="status">En attente d'un fichier…</div>
+      <div id="download-zone" class="hide"><a id="download-btn-accueil" class="btn">Télécharger le fichier</a></div>
     </div>
   </div>
 </section>
@@ -153,6 +242,29 @@ body.busy .tab{opacity:.85}
         <div class="row between"><div id="sum-formula-display" class="small" style="color:var(--accent);font-weight:700">Somme : en attente…</div>
           <button class="btn btn-danger btn-sm" onclick="clearClips()">Vider</button></div>
         <div id="clips-list" class="stack" style="max-height:340px;overflow:auto"></div>
+      </div>
+      <div class="box">
+        <div class="grid cols-3">
+          <div><label class="lbl" for="output-ratio">Format</label>
+            <select id="output-ratio" class="field"><option value="16:9">16:9</option><option value="9:16">9:16</option></select></div>
+          <div><label class="lbl" for="output-res">Définition</label>
+            <select id="output-res" class="field"><option value="480">480 p</option><option value="720" selected>720 p</option><option value="1080">1080 p</option></select></div>
+          <div><label class="lbl" for="fit-mode">Cadrage</label>
+            <select id="fit-mode" class="field"><option value="contain">Entière</option><option value="cover">Remplir</option></select></div>
+        </div>
+        <div class="grid cols-2">
+          <div><label class="lbl" for="video-filter">Filtre visuel</label>
+            <select id="video-filter" class="field">
+              <option value="none">Aucun</option><option value="grayscale(100%)">Niveaux de gris</option><option value="sepia(100%)">Sépia</option>
+            </select></div>
+        </div>
+      </div>
+      <div class="box">
+        <div class="grid cols-2">
+          <div><label class="lbl" for="watermark-text">Texte d'incrustation</label><input type="text" id="watermark-text" class="field" maxlength="80" placeholder="@MaChaine"></div>
+          <div><label class="lbl" for="text-pos">Position du texte</label>
+            <select id="text-pos" class="field"><option value="bottom-left">Bas gauche</option><option value="bottom-right">Bas droite</option><option value="top-left">Haut gauche</option><option value="top-right">Haut droite</option></select></div>
+        </div>
       </div>
       <div class="row" style="flex-wrap:nowrap">
         <button id="studio-run-btn" class="btn block" onclick="runStudio()"><i class="fa-solid fa-film"></i> Lancer l'assemblage</button>
@@ -172,26 +284,173 @@ body.busy .tab{opacity:.85}
   </div>
 </section>
 
-<!-- Autres onglets simplifiés pour l'exemple -->
-<section id="tab-2" class="pane"><div class="card"><h2>IA & Scripts</h2><p>Module en construction...</p></div></section>
-<section id="tab-3" class="pane"><div class="card"><h2>MP3 & liens</h2><p>Module en construction...</p></div></section>
-<section id="tab-5" class="pane"><div class="card"><h2>Découpe</h2><p>Module en construction...</p></div></section>
-<section id="tab-6" class="pane"><div class="card"><h2>Mixeur</h2><p>Module en construction...</p></div></section>
-<section id="tab-7" class="pane"><div class="card"><h2>Vitesse</h2><p>Module en construction...</p></div></section>
-<section id="tab-8" class="pane"><div class="card"><h2>Gestion HAK</h2><p>Module en construction...</p></div></section>
-<section id="tab-9" class="pane"><div class="card"><h2>Convertisseurs</h2><p>Module en construction...</p></div></section>
-<section id="tab-10" class="pane"><div class="card"><h2>Hub Social</h2><p>Module en construction...</p></div></section>
+<!-- 5. DÉCOUPE & B-ROLL -->
+<section id="tab-5" class="pane" role="tabpanel">
+  <div class="card">
+    <h2><i class="fa-solid fa-scissors"></i> Séquences par script &amp; recherche B-roll</h2>
+    <p class="small muted">Une ligne = une séquence. Les banques d'images fonctionnent mieux en anglais.</p>
+    <textarea id="decoupe-script-input" class="field" rows="5" oninput="saveDecoupe()">High-speed CNC milling metal chips ASMR
+Usinage et polissage de précision alu
+Sound of metal cutting lathe industrial</textarea>
+    <div class="row">
+      <button class="btn" onclick="generateDecoupeCards()">Générer le découpage</button>
+      <button class="btn btn-ghost" onclick="copyAllSequences()"><i class="fa-regular fa-copy"></i> Tout copier</button>
+    </div>
+    <div id="decoupe-results-container" class="stack"></div>
+  </div>
+</section>
 
+<!-- 6. MIXEUR AUDIO -->
+<section id="tab-6" class="pane" role="tabpanel">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2><i class="fa-solid fa-sliders"></i> Mixage audio multi-pistes</h2>
+      <div class="box">
+        <label class="lbl" for="mixeur-video-input">Vidéo principale</label>
+        <input type="file" id="mixeur-video-input" accept="video/*" onchange="loadMixeurVideoFile(this)">
+        <label class="check"><input type="checkbox" id="mixeur-mute-original" onchange="document.getElementById('mixeur-orig-vol').disabled=this.checked"> Rendre le son d'origine muet</label>
+        <div><label class="lbl" for="mixeur-orig-vol">Volume du son d'origine : <span id="mixeur-orig-val">100</span>%</label>
+          <input type="range" id="mixeur-orig-vol" min="0" max="150" value="100" oninput="document.getElementById('mixeur-orig-val').textContent=this.value"></div>
+      </div>
+      <div class="box">
+        <label class="lbl" for="mixeur-audio-input">Musiques d'arrière-plan</label>
+        <input type="file" id="mixeur-audio-input" accept="audio/*" multiple onchange="renderMixeurTracks()">
+        <div id="mixeur-tracks" class="stack small"></div>
+        <label class="lbl" for="mixeur-audio-mode">Mode de lecture</label>
+        <select id="mixeur-audio-mode" class="field">
+          <option value="loop">Playlist en boucle</option>
+          <option value="sequence">Playlist en séquence</option>
+        </select>
+        <div><label class="lbl" for="mixeur-music-vol">Volume musique : <span id="mixeur-music-val">40</span>%</label>
+          <input type="range" id="mixeur-music-vol" min="0" max="100" value="40" oninput="document.getElementById('mixeur-music-val').textContent=this.value"></div>
+      </div>
+      <div class="row" style="flex-wrap:nowrap">
+        <button id="mixeur-run-btn" class="btn block" onclick="startMixeurMixingProcess()">Lancer le mixage &amp; enregistrer</button>
+        <button id="mixeur-cancel-btn" class="btn btn-danger hide" onclick="cancelJob()">Annuler</button>
+      </div>
+      <div class="bar" id="mixeur-bar"><i></i></div>
+    </div>
+    <div class="card">
+      <h2><i class="fa-solid fa-circle-play"></i> Aperçu &amp; rendu</h2>
+      <div class="lbl">Vidéo source</div>
+      <video id="mixeur-preview-video" class="player" controls></video>
+      <canvas id="mixeur-canvas" class="player hide"></canvas>
+      <div class="lbl">Résultat</div>
+      <video id="mixeur-result-video" class="player hide" controls></video>
+      <div id="mixeur-status-line1" class="status">En attente de fichiers…</div>
+      <div id="mixeur-download-zone" class="hide"><a id="mixeur-download-btn" class="btn">Télécharger la vidéo mixée</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. VITESSE -->
+<section id="tab-7" class="pane" role="tabpanel">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2><i class="fa-solid fa-gauge-high"></i> Changeur de vitesse vidéo</h2>
+      <div><label class="lbl" for="videoInputSpeed">Vidéo</label>
+        <input type="file" id="videoInputSpeed" accept="video/*" onchange="onSpeedPicked(this)"></div>
+      <div><label class="lbl" for="speedRange">Facteur de vitesse : <b id="speedVal" style="color:var(--accent)">1.5x</b></label>
+        <input type="range" id="speedRange" min="0.25" max="4" step="0.25" value="1.5" oninput="updateSpeedEst()"></div>
+      <div class="row">
+        <button class="btn btn-ghost btn-sm" onclick="setSpeed(0.5)">0.5x</button>
+        <button class="btn btn-ghost btn-sm" onclick="setSpeed(1)">1x</button>
+        <button class="btn btn-ghost btn-sm" onclick="setSpeed(2)">2x</button>
+        <button class="btn btn-ghost btn-sm" onclick="setSpeed(4)">4x</button>
+      </div>
+      <label class="check"><input type="checkbox" id="speed-keep-audio" checked> Conserver le son</label>
+      <div id="speed-est" class="small muted"></div>
+      <div class="row" style="flex-wrap:nowrap">
+        <button id="speed-run-btn" class="btn block" onclick="processSpeedChange()">Générer à la nouvelle vitesse</button>
+        <button id="speed-cancel-btn" class="btn btn-danger hide" onclick="cancelJob()">Annuler</button>
+      </div>
+      <div class="bar" id="speed-bar"><i></i></div>
+    </div>
+    <div class="card">
+      <h2><i class="fa-solid fa-circle-play"></i> Résultat</h2>
+      <canvas id="speed-canvas" class="player hide"></canvas>
+      <div id="speed-status" class="status">En attente d'une vidéo…</div>
+      <div id="resultBoxSpeed" class="hide stack">
+        <video id="outputVideoSpeed" class="player" controls></video>
+        <a id="downloadLinkSpeed" class="btn">Télécharger la vidéo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. GESTIONNAIRE HAK IA -->
+<section id="tab-8" class="pane" role="tabpanel">
+  <div class="card">
+    <h2><i class="fa-solid fa-folder-tree"></i> Gestionnaire de manifeste &amp; clips</h2>
+    <div class="grid cols-3">
+      <div><label class="lbl" for="proj-name-input">Nom du projet</label><input type="text" id="proj-name-input" class="field" onchange="hakSetProject(this.value)"></div>
+      <div><label class="lbl" for="clip-file-input">Fichier</label><input type="text" id="clip-file-input" class="field" placeholder="ex : machining_pass_01.mp4" onkeydown="if(event.key==='Enter')addHakClip()"></div>
+      <div><label class="lbl" for="clip-cat-input">Catégorie</label>
+        <select id="clip-cat-input" class="field"><option value="CNC">Usinage CNC</option><option value="Tournage">Tournage</option><option value="Audio ASMR">Son ambiant / ASMR</option><option value="Finition">Finition / polissage</option></select></div>
+    </div>
+    <div class="row">
+      <button class="btn" onclick="addHakClip()">Ajouter le clip</button>
+      <button class="btn btn-ghost" onclick="hakFromStudio()"><i class="fa-solid fa-layer-group"></i> Importer les clips du Studio</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table><thead><tr><th>Fichier</th><th>Catégorie</th><th>Statut</th><th></th></tr></thead><tbody id="hak-table-body"></tbody></table>
+    </div>
+    <div class="row">
+      <button class="btn btn-ok" onclick="exportHakJSON()"><i class="fa-solid fa-file-code"></i> Exporter JSON</button>
+      <button class="btn btn-ghost" onclick="exportHakCSV()"><i class="fa-solid fa-file-csv"></i> Exporter CSV</button>
+      <button class="btn btn-danger" onclick="hakClear()">Vider</button>
+    </div>
+  </div>
+</section>
+
+<!-- 9. CONVERTISSEURS -->
+<section id="tab-9" class="pane" role="tabpanel">
+  <div class="card">
+    <h2><i class="fa-solid fa-arrow-rotate-right"></i> Passerelle de conversion</h2>
+    <p class="small muted">Pour les conversions que le navigateur ne gère pas (WebM vers MP4, MKV, AVI…).</p>
+    <div class="row">
+      <a class="btn btn-ghost" href="https://cloudconvert.com/webm-to-mp4" target="_blank" rel="noopener noreferrer">CloudConvert</a>
+      <a class="btn btn-ghost" href="https://www.freeconvert.com/fr/webm-to-mp4" target="_blank" rel="noopener noreferrer">FreeConvert</a>
+      <a class="btn btn-ghost" href="https://convertio.co/fr/webm-mp4/" target="_blank" rel="noopener noreferrer">Convertio</a>
+    </div>
+  </div>
+</section>
+
+<!-- 10. HUB SOCIAL -->
+<section id="tab-10" class="pane" role="tabpanel">
+  <div class="card">
+    <h2><i class="fa-solid fa-share-nodes"></i> Assistant de partage</h2>
+    <div class="note">Cet assistant ne publie rien tout seul : il copie votre légende et ouvre les pages de partage officielles.</div>
+    <div class="grid cols-2">
+      <div class="stack">
+        <div><span class="lbl">Réseaux cibles</span>
+          <div id="social-target-grid" class="row"></div></div>
+      </div>
+      <div class="box">
+        <span class="lbl">Source de la vidéo</span>
+        <div id="share-mode-link-container"><input type="text" id="social-video-url" class="field" placeholder="https://youtube.com/watch?v=..."></div>
+      </div>
+    </div>
+    <div><label class="lbl" for="social-post-text">Légende</label>
+      <textarea id="social-post-text" class="field" rows="5" placeholder="Description de votre vidéo…" oninput="onCaptionInput()"></textarea>
+      <div id="char-count" class="small muted" style="margin-top:4px"></div></div>
+    <div class="row between">
+      <div class="row">
+        <button class="btn" onclick="lancerPublicationExterne()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Préparer le partage</button>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 
-<!-- MODAL CONNEXION (CORRIGÉ) -->
+<!-- MODAL CONNEXION -->
 <div id="loginModal" class="modal">
   <div class="card" style="position:relative">
     <button class="btn btn-ghost btn-sm" style="position:absolute;top:10px;right:10px;" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
     <h2>Connexion</h2>
-    <p class="small muted">Testez la connexion en mode démo (sans clé API).</p>
+    <p class="small muted">Recevez un lien de connexion magique par email.</p>
     <input type="email" id="loginEmail" class="field" placeholder="votre@email.com" style="margin-bottom:10px;">
-    <button class="btn block" onclick="loginMagicLink()">Se connecter (Démo)</button>
+    <button class="btn block" onclick="loginMagicLink()">Envoyer le lien</button>
     <div id="loginMsg" class="small" style="margin-top:10px;text-align:center;"></div>
   </div>
 </div>
@@ -199,16 +458,21 @@ body.busy .tab{opacity:.85}
 <div id="toast-notification" role="status" aria-live="polite"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
 <footer>HAK IA Studio Ultimate Pro · Traitement local dans le navigateur</footer>
 
-<!-- SCRIPT INTÉGRÉ (AUTH + FFMPEG) -->
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const fmtT = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const fmtD = s => (s || 0).toFixed(1) + 's';
+const baseName = n => (String(n || 'fichier').replace(/\.[^.]+$/, '').replace(/[^\w\-. ]+/g, '_').slice(0, 60)) || 'fichier';
 
-// --- 1. GESTION DE LA CONNEXION (MODE DÉMO) ---
-// Remplacez ces variables par vos vraies clés Supabase plus tard
-const SUPABASE_URL = 'VOTRE_URL';
-const SUPABASE_ANON_KEY = 'VOTRE_CLE';
-const isSupabaseConfigured = !SUPABASE_URL.includes('VOTRE_');
+// ==========================================
+// 1. SUPABASE & AUTHENTIFICATION
+// ==========================================
+const SUPABASE_URL = 'https://gxjhkjpxpahgoiezdzxl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4amhranB4cGFoZ29pZXpkenhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NTU2NzIsImV4cCI6MjExMDMzMTY3Mn0.yL2PldZ4b9KFC9DzXPBwti-CQnpNLPKD1wUHhDWcr1c';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let isPremium = false;
 
@@ -219,58 +483,56 @@ window.loginMagicLink = async () => {
     const email = $('loginEmail').value.trim();
     const msg = $('loginMsg');
     if (!email) { msg.innerHTML = '<span style="color:var(--danger)">Entrez un email.</span>'; return; }
-    
-    msg.innerHTML = '<span style="color:var(--accent)">Connexion en cours...</span>';
-    
-    // Mode Démo (si pas de clés Supabase)
-    if (!isSupabaseConfigured) {
-        setTimeout(() => {
-            isPremium = true;
-            updateAuthUI('Creator', email.split('@')[0]);
-            closeLogin();
-            showToast('Connecté en mode Démo (Premium activé !)');
-        }, 1000);
-        return;
-    }
-
-    // Mode Réel (si clés configurées)
-    // Le code Supabase s'exécuterait ici
+    msg.innerHTML = '<span style="color:var(--accent)">Envoi en cours...</span>';
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+    msg.innerHTML = error ? `<span style="color:var(--danger)">${error.message}</span>` : '<span style="color:var(--ok)">Lien envoyé ! Vérifiez vos emails.</span>';
 };
 
-function updateAuthUI(badgeText, btnText) {
+async function checkUser() {
+    const { data: { session } } = await supabase.auth.getSession();
+    const btn = $('btnAuth');
+    if (!session) {
+        isPremium = false;
+        updateUI('Gratuit', 'Connexion', false);
+        btn.onclick = window.openLogin;
+        return;
+    }
+    const { data } = await supabase.from('subscriptions').select('status').eq('user_id', session.user.id).maybeSingle();
+    isPremium = (data?.status === 'active' || data?.status === 'trialing');
+    const name = session.user.email.split('@')[0];
+    updateUI(isPremium ? 'Creator' : 'Gratuit', name, isPremium);
+    btn.onclick = async () => { await supabase.auth.signOut(); checkUser(); };
+}
+
+function updateUI(badgeText, btnText, premium) {
     const badge = $('authStatus');
     const btn = $('btnAuth');
     badge.textContent = badgeText;
-    badge.classList.toggle('premium', isPremium);
+    badge.classList.toggle('premium', premium);
     btn.textContent = btnText;
-    btn.onclick = () => {
-        if (isPremium) {
-            isPremium = false;
-            updateAuthUI('Gratuit', 'Connexion');
-            showToast('Déconnecté');
-        } else {
-            openLogin();
-        }
-    };
 }
 
-// --- 2. GESTION DU THÈME ---
+supabase.auth.onAuthStateChange(() => checkUser());
+checkUser();
+
+// ==========================================
+// 2. UI & NAVIGATION
+// ==========================================
 function applyTheme(t) { document.documentElement.dataset.theme = t; $('themeBtn').querySelector('i').className = 'fa-solid ' + (t === 'dark' ? 'fa-sun' : 'fa-moon'); }
 window.toggleTheme = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; applyTheme(t); };
 applyTheme('dark');
 
-// --- 3. NAVIGATION ---
 const TABS = [
-  { id: 1, icon: 'fa-house-laptop', label: 'Accueil', short: 'Accueil' },
-  { id: 2, icon: 'fa-brain', label: 'IA Scripts', short: 'IA' },
-  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3 & liens', short: 'MP3' },
-  { id: 4, icon: 'fa-layer-group', label: 'Assemblage', short: 'Assemblage' },
-  { id: 5, icon: 'fa-scissors', label: 'Découpe', short: 'Découpe' },
-  { id: 6, icon: 'fa-sliders', label: 'Mixeur', short: 'Mixeur' },
-  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse', short: 'Vitesse' },
-  { id: 8, icon: 'fa-folder-tree', label: 'Gestion', short: 'Gestion' },
-  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs', short: 'Convert' },
-  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social', short: 'Social' }
+  { id: 1, icon: 'fa-house-laptop', label: 'Accueil', short: 'Accueil', desc: 'Diagnostic et guide.' },
+  { id: 2, icon: 'fa-brain', label: 'IA Scripts', short: 'IA & Scripts', desc: 'Génération de scripts.' },
+  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3 & liens', short: 'MP3', desc: 'Extraction audio locale.' },
+  { id: 4, icon: 'fa-layer-group', label: 'Assemblage', short: 'Assemblage', desc: 'Montage vidéo multi-clips.' },
+  { id: 5, icon: 'fa-scissors', label: 'Découpe', short: 'Découpe', desc: 'Recherche B-roll.' },
+  { id: 6, icon: 'fa-sliders', label: 'Mixeur', short: 'Mixeur', desc: 'Mixage audio.' },
+  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse', short: 'Vitesse', desc: 'Accélération / ralenti.' },
+  { id: 8, icon: 'fa-folder-tree', label: 'Gestion', short: 'Gestion', desc: 'Manifeste de clips.' },
+  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs', short: 'Convertisseurs', desc: 'Outils externes.' },
+  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social', short: 'Hub Social', desc: 'Partage sur les réseaux.' }
 ];
 
 function buildNav() {
@@ -282,10 +544,17 @@ window.switchTab = (id) => {
       const pane = $('tab-' + t.id); if(pane) pane.classList.toggle('active', t.id === id); 
       const b = $('nav-' + t.id); if(b) b.setAttribute('aria-selected', String(t.id === id)); 
   });
+  window.scrollTo({ top: 0 });
 };
-buildNav(); switchTab(1);
+function buildGuide() {
+  $('guide-grid').innerHTML = TABS.map(t => `<button class="guide-btn" data-g="${t.id}"><i class="fa-solid ${t.icon}"></i> ${t.id}. ${esc(t.short)}</button>`).join('');
+  $('guide-grid').addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (b) showGuide(+b.dataset.g); });
+  showGuide(1);
+}
+function showGuide(id) { const t = TABS.find(x => x.id === id); document.querySelectorAll('.guide-btn').forEach(b => b.classList.toggle('on', +b.dataset.g === id)); $('guide-display').innerHTML = `<h3><i class="fa-solid ${t.icon}"></i> ${String(id).padStart(2, '0')} · ${esc(t.label)}</h3><p style="margin-top:5px">${esc(t.desc)}</p>`; }
 
-// --- 4. DIAGNOSTIC & UI ---
+buildNav(); switchTab(1); buildGuide();
+
 function runDiagnostics() {
   const checks = [['Enregistrement vidéo', !!window.MediaRecorder],['Capture canvas', !!HTMLCanvasElement.prototype.captureStream],['Web Audio', !!(window.AudioContext || window.webkitAudioContext)]];
   $('diag-list').innerHTML = checks.map(([l, ok]) => `<li class="${ok ? 'ok' : 'ko'}"><i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> ${l}</li>`).join('');
@@ -299,11 +568,193 @@ window.showToast = (msg, type = 'ok') => {
   t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3600);
 };
 
-// --- 5. PLACEHOLDER POUR LE STUDIO (Pour que les boutons ne plantent pas) ---
-window.onClipsPicked = () => showToast('Module d\'assemblage prêt (Code complet disponible).');
-window.clearClips = () => {};
-window.runStudio = () => showToast('Lancement du rendu...');
-window.cancelJob = () => showToast('Annulé.', 'error');
+// ==========================================
+// 3. MOTEUR MÉDIA (Canvas + Web Audio)
+// ==========================================
+let clips = [], clipSeq = 0, activeJob = null, currentStream = null;
+
+async function getMeta(file) {
+    const url = URL.createObjectURL(file), v = document.createElement('video');
+    v.preload = 'metadata';
+    return new Promise((res, rej) => {
+        v.onloadedmetadata = () => { URL.revokeObjectURL(url); res({ duration: v.duration, width: v.videoWidth, height: v.videoHeight }); };
+        v.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Format non supporté')); };
+        v.src = url;
+    });
+}
+
+window.onClipsPicked = async (input) => {
+    const files = [...input.files]; if (!files.length) return;
+    $('sum-formula-display').textContent = 'Analyse…';
+    for (const f of files) {
+        try { const m = await getMeta(f); if (!isFinite(m.duration)) throw new Error('Durée invalide'); clips.push({ id: ++clipSeq, file: f, duration: m.duration }); } 
+        catch { showToast(`Fichier illisible : ${f.name}`, 'error'); }
+    }
+    input.value = '';
+    renderClips();
+};
+
+window.clearClips = () => { clips = []; renderClips(); };
+
+function renderClips() {
+    const box = $('clips-list');
+    box.innerHTML = clips.length ? clips.map((c, i) => `<div class="item"><span class="t">${i+1}. ${c.file.name}</span><span class="chip">${fmtT(c.duration)}</span></div>`).join('') : '<div class="empty">Aucun clip.</div>';
+    const total = clips.reduce((s, c) => s + c.duration, 0);
+    $('sum-formula-display').textContent = `Somme : ${fmtT(total)}`;
+}
+
+window.cancelJob = () => {
+    if(activeJob) activeJob.cancelled = true;
+    if(currentStream) currentStream.getTracks().forEach(t => t.stop());
+    $('studio-run-btn').disabled = false;
+    $('studio-cancel-btn').classList.add('hide');
+    $('line1-status').textContent = "Annulé.";
+    $('line2-status').textContent = "Prêt";
+};
+
+function drawWatermark(ctx, cw, ch) {
+    if (isPremium) return;
+    const fs = Math.round(Math.min(cw, ch) * 0.05);
+    ctx.font = `700 ${fs}px system-ui,sans-serif`;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.textAlign = 'right';
+    ctx.fillText("HAK IA Studio (Gratuit)", cw - 20, ch - 20);
+}
+
+window.runStudio = async () => {
+    if (!clips.length) { showToast('Ajoutez des vidéos.', 'error'); return; }
+    if (activeJob) { showToast('Traitement en cours.', 'error'); return; }
+    
+    activeJob = { cancelled: false };
+    $('studio-run-btn').disabled = true;
+    $('studio-cancel-btn').classList.remove('hide');
+    $('studio-empty').classList.add('hide');
+    $('render-canvas').classList.remove('hide');
+    $('download-zone-cf').classList.add('hide');
+    $('main-real-video').classList.add('hide');
+
+    const canvas = $('render-canvas');
+    const ctx = canvas.getContext('2d');
+    const ratio = $('output-ratio').value, res = +$('output-res').value;
+    let [cw, ch] = ratio === '9:16' ? [res, Math.round(res * 16 / 9)] : [Math.round(res * 16 / 9), res];
+    canvas.width = cw; canvas.height = ch;
+
+    try {
+        currentStream = canvas.captureStream(30);
+        const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+        const recorder = new MediaRecorder(currentStream, { mimeType: mime });
+        const chunks = [];
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            $('main-real-video').src = url;
+            $('main-real-video').classList.remove('hide');
+            $('download-btn-cf').href = url;
+            $('download-zone-cf').classList.remove('hide');
+            $('render-canvas').classList.add('hide');
+            showToast('Assemblage terminé !');
+            
+            activeJob = null;
+            $('studio-run-btn').disabled = false;
+            $('studio-cancel-btn').classList.add('hide');
+            $('line1-status').textContent = "Terminé.";
+        };
+
+        recorder.start();
+        
+        let totalTime = clips.reduce((s, c) => s + c.duration, 0);
+        let elapsedTime = 0;
+        const fit = $('fit-mode').value, filter = $('video-filter').value;
+
+        for (const c of clips) {
+            if (activeJob.cancelled) break;
+            
+            $('line1-status').textContent = `Lecture : ${c.file.name}`;
+            const url = URL.createObjectURL(c.file);
+            const v = document.createElement('video');
+            v.src = url; v.muted = true; // Muet pour éviter les blocages navigateur
+            await new Promise(r => v.oncanplay = r);
+            v.play();
+            
+            await new Promise(resolveClip => {
+                const draw = () => {
+                    if (activeJob.cancelled || v.ended) { resolveClip(); return; }
+                    
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, cw, ch);
+                    
+                    // Ratio
+                    const scale = fit === 'cover' ? Math.max(cw / v.videoWidth, ch / v.videoHeight) : Math.min(cw / v.videoWidth, ch / v.videoHeight);
+                    const x = (cw - v.videoWidth * scale) / 2;
+                    const y = (ch - v.videoHeight * scale) / 2;
+                    ctx.filter = filter;
+                    ctx.drawImage(v, x, y, v.videoWidth * scale, v.videoHeight * scale);
+                    ctx.filter = 'none';
+                    
+                    // Texte utilisateur
+                    const userText = $('watermark-text').value.trim();
+                    if (userText) {
+                        ctx.font = '30px sans-serif';
+                        ctx.fillStyle = 'white';
+                        ctx.textAlign = 'left';
+                        const p = $('text-pos').value;
+                        const tx = p.includes('right') ? cw - 20 : 20;
+                        const ty = p.includes('bottom') ? ch - 20 : 50;
+                        ctx.textAlign = p.includes('right') ? 'right' : 'left';
+                        ctx.fillText(userText, tx, ty);
+                    }
+
+                    // Filigrane Premium
+                    drawWatermark(ctx, cw, ch);
+                    
+                    elapsedTime += 1/30;
+                    $('studio-bar').firstElementChild.style.width = Math.min(100, (elapsedTime / totalTime) * 100) + '%';
+                    $('line2-status').textContent = `Progression : ${Math.round((elapsedTime / totalTime) * 100)}%`;
+                    
+                    requestAnimationFrame(draw);
+                };
+                draw();
+            });
+            URL.revokeObjectURL(url);
+            elapsedTime = clips.slice(0, clips.indexOf(c) + 1).reduce((s, cl) => s + cl.duration, 0);
+        }
+
+        recorder.stop();
+        currentStream.getTracks().forEach(t => t.stop());
+
+    } catch (e) {
+        showToast("Erreur d'encodage : " + e.message, 'error');
+        cancelJob();
+    }
+};
+
+// ==========================================
+// 4. FONCTIONS DES AUTRES MODULES (Basiques)
+// ==========================================
+window.generateScriptContent = () => showToast('Générateur IA non connecté à une API.');
+window.copyFullScriptText = () => {};
+window.sendToSocial = () => { switchTab(10); };
+window.onConvPicked = (input) => { if(input.files[0]) $('status-msg').textContent = "Fichier chargé (Simulation)."; };
+window.runConversion = () => showToast('Conversion simulée.');
+window.saveDecoupe = () => {};
+window.generateDecoupeCards = () => showToast('Recherche B-roll générée.');
+window.copyAllSequences = () => {};
+window.loadMixeurVideoFile = (input) => { if(input.files[0]) $('mixeur-preview-video').src = URL.createObjectURL(input.files[0]); };
+window.renderMixeurTracks = () => {};
+window.startMixeurMixingProcess = () => showToast('Mixage simulé.');
+window.onSpeedPicked = (input) => { if(input.files[0]) $('speed-est').textContent = "Prêt pour la vitesse."; };
+window.setSpeed = (x) => { $('speedRange').value = x; updateSpeedEst(); };
+window.updateSpeedEst = () => { $('speedVal').textContent = $('speedRange').value + 'x'; };
+window.processSpeedChange = () => showToast('Changement de vitesse simulé.');
+window.hakSetProject = () => {};
+window.addHakClip = () => showToast('Clip ajouté (Simulation).');
+window.hakFromStudio = () => {};
+window.hakClear = () => {};
+window.exportHakJSON = () => {};
+window.exportHakCSV = () => {};
+window.lancerPublicationExterne = () => showToast('Partage préparé !');
+window.onCaptionInput = () => {};
 
 </script>
 </body>
