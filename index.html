@@ -12,7 +12,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;transition:background .25s,color .25s}
 h1,h2,h3{margin:0}
-a{color:var(--accent)}
+a{color:var(--accent);text-decoration:none}
 .hide{display:none!important}
 .sticky-top{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px}
@@ -20,8 +20,8 @@ a{color:var(--accent)}
 .logo{width:40px;height:40px;border-radius:12px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent);background:var(--card);box-shadow:0 0 18px rgba(6,182,212,.3)}
 .brand-t{font-weight:800;color:var(--accent);letter-spacing:.3px}
 .brand-s{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted)}
-.badge { background:#555; color:#fff; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold; }
-.badge.premium { background:var(--accent); color:#000; }
+.badge { background:#555; color:#fff; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold; transition: 0.3s; }
+.badge.premium { background:var(--accent); color:#000; box-shadow: 0 0 10px var(--accent); }
 .tabs{display:flex;gap:6px;padding:6px 16px 10px;overflow-x:auto;scrollbar-width:thin}
 .tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);border-bottom:3px solid var(--accent2);background:var(--card);color:var(--muted);font:600 12px system-ui,sans-serif;cursor:pointer;white-space:nowrap;transition:transform .12s,color .12s}
 .tab:hover{color:var(--accent);transform:translateY(-1px)}
@@ -41,8 +41,7 @@ a{color:var(--accent)}
 .grid{display:grid;gap:16px;align-items:start}
 .cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.guide-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-@media(max-width:900px){.cols-2,.cols-3{grid-template-columns:1fr}.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.cols-2,.cols-3{grid-template-columns:1fr}}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .row.between{justify-content:space-between}
 .muted{color:var(--muted)}
@@ -63,44 +62,25 @@ input[type=file]::file-selector-button{margin-right:10px;padding:7px 12px;border
 .btn-sm{padding:6px 10px;font-size:12px;border-radius:9px;border-bottom-width:3px}
 .btn-ghost{background:var(--panel);color:var(--text);border-color:var(--border);border-bottom-color:var(--accent2);text-shadow:none}
 .btn-danger{background:transparent;color:var(--danger);border-color:rgba(248,113,113,.45);border-bottom-width:1px;text-shadow:none}
-.btn-ok{background:linear-gradient(180deg,#10b981,#059669);border-color:#34d399;border-bottom-color:#047857}
 .bar{height:10px;border-radius:99px;background:var(--panel);border:1px solid var(--border);overflow:hidden}
 .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#3b82f6);transition:width .25s}
 .status{font-size:12px;padding:8px 10px;border-radius:9px;background:var(--panel);border:1px solid var(--border);color:var(--muted);word-break:break-word}
-.status.strong{color:var(--accent);font-weight:700}
 .player{width:100%;max-height:300px;background:#000;border-radius:12px;border:1px solid var(--border);object-fit:contain;display:block}
-canvas.player{height:auto}
 .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:var(--panel);border:1px solid var(--border);border-radius:10px;font-size:13px}
 .item a,.item span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .stack>*+*{margin-top:8px}
 .diag{list-style:none;margin:0;padding:0;font-size:13px}
 .diag li{padding:3px 0}
 .diag .ok i{color:var(--ok)}.diag .ko i{color:var(--danger)}
-.clip{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
-.clip-head{display:flex;gap:8px;align-items:center;font-size:12px}
-.clip-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--accent);font-weight:600}
-.clip-ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:8px}
-.clip-ctrl label{font-size:11px;color:var(--muted);width:78px}
-.res-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
-.res-card .t{font-size:13px;font-weight:600}
-.res-card p{white-space:pre-line;font-size:13px;margin:6px 0 0}
-.chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--border);background:var(--panel);color:var(--muted)}
-.tag{display:inline-block;padding:3px 8px;margin:2px;border-radius:8px;background:var(--panel);border:1px solid var(--border);font-size:12px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:8px;text-align:left;border-bottom:1px solid var(--border)}
-th{color:var(--muted);font-weight:600}
-.guide-btn{display:flex;align-items:center;gap:8px;padding:10px;border-radius:12px;border:1px solid var(--border);border-bottom:3px solid var(--accent2);background:var(--panel);color:var(--text);font:600 12px system-ui,sans-serif;text-align:left;cursor:pointer}
-.guide-btn.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;border-color:var(--accent)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
 .modal.open{display:flex}
-.modal .card{max-width:520px;width:100%;max-height:92vh;overflow:auto}
+.modal .card{max-width:420px;width:100%;}
 #toast-notification{position:fixed;bottom:20px;right:20px;max-width:min(90vw,380px);background:var(--card);color:var(--text);border:1px solid var(--accent);border-radius:12px;padding:12px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;transform:translateY(90px);opacity:0;transition:all .3s;z-index:200;pointer-events:none}
 #toast-notification.show{transform:none;opacity:1}
 #toast-notification[data-type=error]{border-color:var(--danger)}
 #toast-notification[data-type=error] i{color:var(--danger)}
 #toast-notification i{color:var(--accent)}
 footer{border-top:1px solid var(--border);padding:14px;text-align:center;font-size:12px;color:var(--muted)}
-body.busy .tab{opacity:.85}
 @media(max-width:600px){.brand-s{display:none}.hero h1{font-size:19px}}
 </style>
 </head>
@@ -113,21 +93,21 @@ body.busy .tab{opacity:.85}
       <div><div class="brand-t">HAK IA Studio</div><div class="brand-s">ULTIMATE PRO</div></div>
     </div>
     <div class="row">
-      <a href="pricing.html" class="btn btn-ghost btn-sm" style="text-decoration:none">Tarifs</a>
+      <a href="pricing.html" class="btn btn-ghost btn-sm">Tarifs</a>
       <span id="authStatus" class="badge">Gratuit</span>
       <button id="btnAuth" class="btn btn-ghost btn-sm"><i class="fa-solid fa-user"></i> Connexion</button>
       <button class="btn btn-ghost btn-sm" id="themeBtn" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i></button>
     </div>
   </header>
-  <nav id="tabs" class="tabs" role="tablist" aria-label="Modules de la plateforme"></nav>
+  <nav id="tabs" class="tabs" role="tablist"></nav>
 </div>
 
 <main class="wrap">
 <!-- 1. ACCUEIL -->
-<section id="tab-1" class="pane active" role="tabpanel">
+<section id="tab-1" class="pane active">
   <div class="card hero">
     <h1>HAK IA Studio Ultimate Pro</h1>
-    <p class="muted">Suite de production : scripts IA, montage vidéo, mixage audio, conversion et préparation de diffusion. Traitement 100% local.</p>
+    <p class="muted">Suite de production vidéo 100% locale. Traitement sécurisé dans votre navigateur.</p>
   </div>
   <div class="grid cols-2">
     <div class="card">
@@ -136,49 +116,52 @@ body.busy .tab{opacity:.85}
     </div>
     <div class="card">
       <h2><i class="fa-solid fa-circle-info"></i> Guide des modules</h2>
-      <div id="guide-grid" class="grid guide-grid"></div>
+      <div id="guide-grid" class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px;"></div>
       <div id="guide-display" class="box" style="margin-top:10px"></div>
     </div>
   </div>
 </section>
 
 <!-- 2. IA & SCRIPTS -->
-<section id="tab-2" class="pane" role="tabpanel">
+<section id="tab-2" class="pane">
   <div class="card">
     <h2><i class="fa-solid fa-brain"></i> Générateur IA</h2>
-    <div id="script-view-dashboard" class="stack">
-      <div><label class="lbl" for="script-video-topic">Sujet</label>
-        <input type="text" id="script-video-topic" class="field" placeholder="Ex : usinage CNC..."></div>
-      <button id="script-generate-btn" class="btn block" onclick="showToast('Génération simulée')"><i class="fa-solid fa-wand-magic-sparkles"></i> Générer</button>
+    <p class="muted small">Générez des scripts viraux et des idées de titres.</p>
+    <div class="box">
+      <input type="text" id="script-topic" class="field" placeholder="Sujet de la vidéo...">
+      <button class="btn block" onclick="showToast('Génération simulée. Connectez une API IA pour la version finale.')">Générer le script</button>
     </div>
   </div>
 </section>
 
 <!-- 3. TÉLÉCHARGER & MP3 -->
-<section id="tab-3" class="pane" role="tabpanel">
+<section id="tab-3" class="pane">
   <div class="card">
-    <h2><i class="fa-solid fa-file-export"></i> Convertisseur local</h2>
-    <input type="file" id="pc-video-input" accept="video/*,audio/*">
-    <button class="btn block" onclick="showToast('Conversion simulée')">Lancer</button>
+    <h2><i class="fa-solid fa-cloud-arrow-down"></i> Convertisseur MP3</h2>
+    <p class="muted small">Extrayez l'audio de vos vidéos au format MP3.</p>
+    <input type="file" id="mp3-input" accept="video/*,audio/*" class="field">
+    <button class="btn block" onclick="showToast('Conversion MP3 en cours de développement...')">Extraire l'audio</button>
   </div>
 </section>
 
-<!-- 4. STUDIO ASSEMBLAGE -->
-<section id="tab-4" class="pane" role="tabpanel">
+<!-- 4. STUDIO ASSEMBLAGE (LE COEUR) -->
+<section id="tab-4" class="pane">
   <div class="grid cols-2">
     <div class="card">
       <h2><i class="fa-solid fa-layer-group"></i> Studio d'assemblage</h2>
       <div class="box">
-        <label class="lbl" for="real-videos-input">Ajouter des vidéos</label>
+        <label class="lbl">Ajouter des vidéos</label>
         <input type="file" id="real-videos-input" accept="video/*" multiple onchange="onClipsPicked(this)">
-        <div class="row between"><div id="sum-formula-display" class="small" style="color:var(--accent);font-weight:700">Somme : en attente…</div>
-          <button class="btn btn-danger btn-sm" onclick="clearClips()">Vider</button></div>
+        <div class="row between">
+          <div id="sum-formula-display" class="small" style="color:var(--accent);font-weight:700">Somme : en attente…</div>
+          <button class="btn btn-danger btn-sm" onclick="clearClips()">Vider</button>
+        </div>
         <div id="clips-list" class="stack" style="max-height:340px;overflow:auto"></div>
       </div>
       <div class="box">
         <div class="grid cols-2">
-          <div><label class="lbl" for="watermark-text">Texte (Optionnel)</label><input type="text" id="watermark-text" class="field" placeholder="Mon texte..."></div>
-          <div><label class="lbl" for="text-pos">Position</label><select id="text-pos" class="field"><option value="bottom-right">Bas droite</option><option value="bottom-left">Bas gauche</option></select></div>
+          <div><label class="lbl">Texte (Optionnel)</label><input type="text" id="watermark-text" class="field" placeholder="Mon texte..."></div>
+          <div><label class="lbl">Position</label><select id="text-pos" class="field"><option value="bottom-right">Bas droite</option><option value="bottom-left">Bas gauche</option></select></div>
         </div>
       </div>
       <div class="row" style="flex-wrap:nowrap">
@@ -194,23 +177,19 @@ body.busy .tab{opacity:.85}
       <div id="studio-empty" class="empty">Le rendu apparaîtra ici.</div>
       <div id="line1-status" class="status">Ligne 1 : en attente…</div>
       <div id="line2-status" class="status strong">Ligne 2 : prêt</div>
-      <div id="download-zone-cf" class="hide"><a id="download-btn-cf" class="btn">Télécharger</a></div>
+      <div id="download-zone-cf" class="hide" style="margin-top:10px"><a id="download-btn-cf" class="btn" download="video.webm">⬇️ Télécharger</a></div>
     </div>
   </div>
 </section>
 
-<!-- 5. DÉCOUPE -->
-<section id="tab-5" class="pane"><div class="card"><h2>Découpe</h2><p>Module en construction.</p></div></section>
-<!-- 6. MIXEUR -->
-<section id="tab-6" class="pane"><div class="card"><h2>Mixeur</h2><p>Module en construction.</p></div></section>
-<!-- 7. VITESSE -->
-<section id="tab-7" class="pane"><div class="card"><h2>Vitesse</h2><p>Module en construction.</p></div></section>
-<!-- 8. GESTION HAK -->
-<section id="tab-8" class="pane"><div class="card"><h2>Gestion HAK</h2><p>Module en construction.</p></div></section>
-<!-- 9. CONVERTISSEURS -->
-<section id="tab-9" class="pane"><div class="card"><h2>Convertisseurs</h2><p>Module en construction.</p></div></section>
-<!-- 10. HUB SOCIAL -->
-<section id="tab-10" class="pane"><div class="card"><h2>Hub Social</h2><p>Module en construction.</p></div></section>
+<!-- MODULES RESTANTS (Placeholders) -->
+<section id="tab-5" class="pane"><div class="card"><h2>Découpe</h2><p class="muted">Module en cours de finalisation.</p></div></section>
+<section id="tab-6" class="pane"><div class="card"><h2>Mixeur Audio</h2><p class="muted">Module en cours de finalisation.</p></div></section>
+<section id="tab-7" class="pane"><div class="card"><h2>Vitesse</h2><p class="muted">Module en cours de finalisation.</p></div></section>
+<section id="tab-8" class="pane"><div class="card"><h2>Gestion HAK</h2><p class="muted">Module en cours de finalisation.</p></div></section>
+<section id="tab-9" class="pane"><div class="card"><h2>Convertisseurs</h2><p class="muted">Module en cours de finalisation.</p></div></section>
+<section id="tab-10" class="pane"><div class="card"><h2>Hub Social</h2><p class="muted">Module en cours de finalisation.</p></div></section>
+
 </main>
 
 <!-- MODAL CONNEXION -->
@@ -225,7 +204,7 @@ body.busy .tab{opacity:.85}
   </div>
 </div>
 
-<div id="toast-notification" role="status" aria-live="polite"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
+<div id="toast-notification"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
 <footer>HAK IA Studio Ultimate Pro · Traitement local dans le navigateur</footer>
 
 <script>
@@ -233,12 +212,12 @@ body.busy .tab{opacity:.85}
 const $ = id => document.getElementById(id);
 
 // ==========================================
-// 1. CORRECTION DU CONFLIT SUPABASE
+// 1. AUTHENTIFICATION SUPABASE
 // ==========================================
 const SUPABASE_URL = 'https://gxjhkjpxpahgoiezdzxl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4amhranB4cGFoZ29pZXpkenhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NTU2NzIsImV4cCI6MjExMDMzMTY3Mn0.yL2PldZ4b9KFC9DzXPBwti-CQnpNLPKD1wUHhDWcr1c';
 
-// J'ai renommé "supabase" en "supabaseClient" pour éviter le conflit qui bloquait TOUT le code
+// Correction du conflit de nom : supabaseClient au lieu de supabase
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let isPremium = false;
@@ -252,14 +231,12 @@ window.loginMagicLink = async () => {
     if (!email) { msg.innerHTML = '<span style="color:var(--danger)">Entrez un email.</span>'; return; }
     msg.innerHTML = '<span style="color:var(--accent)">Envoi en cours...</span>';
     
-    // Utilisation de supabaseClient
     const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
     
     msg.innerHTML = error ? `<span style="color:var(--danger)">${error.message}</span>` : '<span style="color:var(--ok)">Lien envoyé ! Vérifiez vos emails.</span>';
 };
 
 async function checkUser() {
-    // Utilisation de supabaseClient
     const { data: { session } } = await supabaseClient.auth.getSession();
     const btn = $('btnAuth');
     if (!session) {
@@ -268,36 +245,50 @@ async function checkUser() {
         btn.onclick = window.openLogin;
         return;
     }
-    // Utilisation de supabaseClient
+    
     const { data } = await supabaseClient.from('subscriptions').select('status').eq('user_id', session.user.id).maybeSingle();
     isPremium = (data?.status === 'active' || data?.status === 'trialing');
+    
     const name = session.user.email.split('@')[0];
     updateUI(isPremium ? 'Creator' : 'Gratuit', name, isPremium);
-    btn.onclick = async () => { await supabaseClient.auth.signOut(); checkUser(); };
+    
+    btn.onclick = async () => { 
+        if(confirm('Se déconnecter ?')) {
+            await supabaseClient.auth.signOut(); 
+            checkUser(); 
+        }
+    };
 }
 
 function updateUI(badgeText, btnText, premium) {
     const badge = $('authStatus');
     const btn = $('btnAuth');
     badge.textContent = badgeText;
-    badge.classList.toggle('premium', premium);
+    badge.className = 'badge ' + (premium ? 'premium' : '');
     btn.textContent = btnText;
 }
 
 supabaseClient.auth.onAuthStateChange(() => checkUser());
 checkUser();
 
+
 // ==========================================
-// 2. UI & NAVIGATION (Maintenant fonctionnelle)
+// 2. UI & NAVIGATION
 // ==========================================
-function applyTheme(t) { document.documentElement.dataset.theme = t; $('themeBtn').querySelector('i').className = 'fa-solid ' + (t === 'dark' ? 'fa-sun' : 'fa-moon'); }
-window.toggleTheme = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; applyTheme(t); };
+function applyTheme(t) { 
+    document.documentElement.dataset.theme = t; 
+    $('themeBtn').querySelector('i').className = 'fa-solid ' + (t === 'dark' ? 'fa-sun' : 'fa-moon'); 
+}
+window.toggleTheme = () => { 
+    const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; 
+    applyTheme(t); 
+};
 applyTheme('dark');
 
 const TABS = [
   { id: 1, icon: 'fa-house-laptop', label: 'Accueil' },
   { id: 2, icon: 'fa-brain', label: 'IA Scripts' },
-  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3 & liens' },
+  { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3' },
   { id: 4, icon: 'fa-layer-group', label: 'Assemblage' },
   { id: 5, icon: 'fa-scissors', label: 'Découpe' },
   { id: 6, icon: 'fa-sliders', label: 'Mixeur' },
@@ -308,41 +299,61 @@ const TABS = [
 ];
 
 function buildNav() {
-  $('tabs').innerHTML = TABS.map(t => `<button class="tab" role="tab" id="nav-${t.id}" data-tab="${t.id}" aria-selected="false"><i class="fa-solid ${t.icon}"></i><span>${t.label}</span></button>`).join('');
-  $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) switchTab(b.dataset.tab); });
+  $('tabs').innerHTML = TABS.map(t => `<button class="tab" role="tab" id="nav-${t.id}" data-tab="${t.id}"><i class="fa-solid ${t.icon}"></i><span>${t.label}</span></button>`).join('');
+  $('tabs').addEventListener('click', e => { 
+      const b = e.target.closest('[data-tab]'); 
+      if (b) switchTab(b.dataset.tab); 
+  });
 }
+
 window.switchTab = (id) => {
-  id = +id; TABS.forEach(t => { 
+  id = +id; 
+  TABS.forEach(t => { 
       const pane = $('tab-' + t.id); if(pane) pane.classList.toggle('active', t.id === id); 
       const b = $('nav-' + t.id); if(b) b.setAttribute('aria-selected', String(t.id === id)); 
   });
   window.scrollTo({ top: 0 });
 };
-function buildGuide() {
-  $('guide-grid').innerHTML = TABS.map(t => `<button class="guide-btn" data-g="${t.id}"><i class="fa-solid ${t.icon}"></i> ${t.id}. ${t.label}</button>`).join('');
-  $('guide-grid').addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (b) showGuide(+b.dataset.g); });
-  showGuide(1);
-}
-function showGuide(id) { const t = TABS.find(x => x.id === id); document.querySelectorAll('.guide-btn').forEach(b => b.classList.toggle('on', +b.dataset.g === id)); $('guide-display').innerHTML = `<h3><i class="fa-solid ${t.icon}"></i> ${String(id).padStart(2, '0')} · ${t.label}</h3>`; }
 
-// Lancement de l'interface
+function buildGuide() {
+  $('guide-grid').innerHTML = TABS.map(t => `<button class="guide-btn" data-g="${t.id}" style="padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--panel);cursor:pointer"><i class="fa-solid ${t.icon}"></i> ${t.label}</button>`).join('');
+  $('guide-grid').addEventListener('click', e => { 
+      const b = e.target.closest('[data-g]'); 
+      if (b) showGuide(+b.dataset.g); 
+  });
+  showGuide(4); // Affiche l'assemblage par défaut
+}
+
+function showGuide(id) { 
+    const t = TABS.find(x => x.id === id); 
+    $('guide-display').innerHTML = `<h3><i class="fa-solid ${t.icon}"></i> ${t.label}</h3><p class="small muted">Module numéro ${id}. Cliquez sur l'onglet en haut pour l'ouvrir.</p>`; 
+}
+
 buildNav(); switchTab(1); buildGuide();
 
 function runDiagnostics() {
-  const checks = [['Enregistrement vidéo', !!window.MediaRecorder],['Capture canvas', !!HTMLCanvasElement.prototype.captureStream],['Web Audio', !!(window.AudioContext || window.webkitAudioContext)]];
+  const checks = [
+      ['Enregistrement vidéo', !!window.MediaRecorder],
+      ['Capture canvas', !!HTMLCanvasElement.prototype.captureStream]
+  ];
   $('diag-list').innerHTML = checks.map(([l, ok]) => `<li class="${ok ? 'ok' : 'ko'}"><i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> ${l}</li>`).join('');
 }
 runDiagnostics();
 
 let toastT;
 window.showToast = (msg, type = 'ok') => {
-  const t = $('toast-notification'); $('toast-message').textContent = msg; t.dataset.type = type;
+  const t = $('toast-notification'); 
+  $('toast-message').textContent = msg; 
+  t.dataset.type = type;
   t.querySelector('i').className = 'fa-solid ' + (type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-check');
-  t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3600);
+  t.classList.add('show'); 
+  clearTimeout(toastT); 
+  toastT = setTimeout(() => t.classList.remove('show'), 3600);
 };
 
+
 // ==========================================
-// 3. STUDIO D'ASSEMBLAGE (MOTEUR VIDÉO)
+// 3. MOTEUR VIDÉO (STUDIO)
 // ==========================================
 let clips = [], clipSeq = 0, activeJob = null, currentStream = null;
 
@@ -359,11 +370,19 @@ async function getMeta(file) {
 }
 
 window.onClipsPicked = async (input) => {
-    const files = [...input.files]; if (!files.length) return;
+    const files = [...input.files]; 
+    if (!files.length) return;
+    
     $('sum-formula-display').textContent = 'Analyse…';
+    
     for (const f of files) {
-        try { const m = await getMeta(f); if (!isFinite(m.duration)) throw new Error('Durée invalide'); clips.push({ id: ++clipSeq, file: f, duration: m.duration }); } 
-        catch { showToast(`Fichier illisible : ${f.name}`, 'error'); }
+        try { 
+            const m = await getMeta(f); 
+            if (!isFinite(m.duration)) throw new Error('Durée invalide'); 
+            clips.push({ id: ++clipSeq, file: f, duration: m.duration }); 
+        } catch { 
+            showToast(`Fichier illisible : ${f.name}`, 'error'); 
+        }
     }
     input.value = '';
     renderClips();
@@ -373,9 +392,9 @@ window.clearClips = () => { clips = []; renderClips(); };
 
 function renderClips() {
     const box = $('clips-list');
-    box.innerHTML = clips.length ? clips.map((c, i) => `<div class="item"><span class="t">${i+1}. ${c.file.name}</span><span class="chip">${fmtT(c.duration)}</span></div>`).join('') : '<div class="empty">Aucun clip.</div>';
+    box.innerHTML = clips.length ? clips.map((c, i) => `<div class="item"><span class="t">${i+1}. ${c.file.name}</span><span class="chip" style="background:var(--accent-dark);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px">${fmtT(c.duration)}</span></div>`).join('') : '<div class="empty">Aucun clip sélectionné.</div>';
     const total = clips.reduce((s, c) => s + c.duration, 0);
-    $('sum-formula-display').textContent = `Somme : ${fmtT(total)}`;
+    $('sum-formula-display').textContent = `Durée totale : ${fmtT(total)}`;
 }
 
 window.cancelJob = () => {
@@ -387,7 +406,7 @@ window.cancelJob = () => {
 };
 
 function drawWatermark(ctx, cw, ch) {
-    if (isPremium) return;
+    if (isPremium) return; // Pas de filigrane si Premium
     const fs = Math.round(Math.min(cw, ch) * 0.05);
     ctx.font = `700 ${fs}px system-ui,sans-serif`;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
@@ -416,6 +435,7 @@ window.runStudio = async () => {
         const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
         const recorder = new MediaRecorder(currentStream, { mimeType: mime });
         const chunks = [];
+        
         recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
         recorder.onstop = () => {
             const blob = new Blob(chunks, { type: 'video/webm' });
@@ -426,6 +446,7 @@ window.runStudio = async () => {
             $('download-zone-cf').classList.remove('hide');
             $('render-canvas').classList.add('hide');
             showToast('Assemblage terminé !');
+            
             activeJob = null;
             $('studio-run-btn').disabled = false;
             $('studio-cancel-btn').classList.add('hide');
@@ -438,6 +459,7 @@ window.runStudio = async () => {
 
         for (const c of clips) {
             if (activeJob.cancelled) break;
+            
             $('line1-status').textContent = `Lecture : ${c.file.name}`;
             const url = URL.createObjectURL(c.file);
             const v = document.createElement('video');
@@ -448,8 +470,10 @@ window.runStudio = async () => {
             await new Promise(resolveClip => {
                 const draw = () => {
                     if (activeJob.cancelled || v.ended) { resolveClip(); return; }
+                    
                     ctx.fillStyle = '#000';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
                     const scale = Math.min(canvas.width / v.videoWidth, canvas.height / v.videoHeight);
                     const x = (canvas.width - v.videoWidth * scale) / 2;
                     const y = (canvas.height - v.videoHeight * scale) / 2;
@@ -462,10 +486,12 @@ window.runStudio = async () => {
                         ctx.textAlign = p.includes('right') ? 'right' : 'left';
                         ctx.fillText(userText, p.includes('right') ? canvas.width - 20 : 20, canvas.height - 20);
                     }
+                    
                     drawWatermark(ctx, canvas.width, canvas.height);
                     
                     elapsedTime += 1/30;
                     $('studio-bar').firstElementChild.style.width = Math.min(100, (elapsedTime / totalTime) * 100) + '%';
+                    
                     requestAnimationFrame(draw);
                 };
                 draw();
@@ -475,7 +501,7 @@ window.runStudio = async () => {
         recorder.stop();
         currentStream.getTracks().forEach(t => t.stop());
     } catch (e) {
-        showToast("Erreur : " + e.message, 'error');
+        showToast("Erreur lors du rendu : " + e.message, 'error');
         cancelJob();
     }
 };
