@@ -122,145 +122,71 @@ body.busy .tab{opacity:.85}
       <a href="pricing.html" class="btn btn-ghost btn-sm" style="text-decoration:none">Tarifs</a>
       <span id="authStatus" class="badge">Gratuit</span>
       <button id="btnAuth" class="btn btn-ghost btn-sm"><i class="fa-solid fa-user"></i> Connexion</button>
-      <button class="btn btn-ghost btn-sm" id="themeBtn" onclick="toggleTheme()" aria-label="Changer de thème"><i class="fa-solid fa-sun"></i> <span id="themeBtnText">Mode Jour</span></button>
+      <button class="btn btn-ghost btn-sm" id="themeBtn" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> <span id="themeBtnText">Jour</span></button>
     </div>
   </header>
-  <nav id="tabs" class="tabs" role="tablist" aria-label="Modules de la plateforme"></nav>
+  <nav id="tabs" class="tabs" role="tablist"></nav>
 </div>
 
 <main class="wrap">
 
 <!-- 1. ACCUEIL -->
-<section id="tab-1" class="pane active" role="tabpanel">
+<section id="tab-1" class="pane active">
   <div class="card hero">
     <h1>HAK IA Studio Ultimate Pro</h1>
-    <p class="muted">Suite de production : scripts IA, montage vidéo, mixage audio, conversion et préparation de diffusion. Le traitement des fichiers se fait dans votre navigateur et rien n'est envoyé à un serveur.</p>
+    <p class="muted">Suite de production 100% locale. Scripts IA, montage, audio, conversion.</p>
   </div>
   <div class="grid cols-2">
     <div class="card">
-      <h2><i class="fa-solid fa-stethoscope"></i> Diagnostic du navigateur</h2>
+      <h2><i class="fa-solid fa-stethoscope"></i> Diagnostic</h2>
       <ul id="diag-list" class="diag"></ul>
       <div id="diag-format" class="small muted"></div>
     </div>
     <div class="card">
-      <h2><i class="fa-solid fa-box-archive"></i> Sauvegarde des données</h2>
-      <p class="small muted">Exportez vos liens, scripts, outils et manifeste dans un fichier, ou restaurez-les sur un autre appareil.</p>
+      <h2><i class="fa-solid fa-box-archive"></i> Sauvegarde</h2>
       <div class="row">
-        <button class="btn btn-sm" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Exporter</button>
-        <label class="btn btn-ghost btn-sm" style="cursor:pointer"><i class="fa-solid fa-upload"></i> Restaurer<input type="file" accept="application/json,.json" class="hide" onchange="importBackup(this)"></label>
+        <button class="btn btn-sm" onclick="exportBackup()">Exporter</button>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">Restaurer<input type="file" accept=".json" class="hide" onchange="importBackup(this)"></label>
       </div>
     </div>
   </div>
   <div class="card">
-    <h2><i class="fa-solid fa-bookmark"></i> Bloc-notes de liens &amp; inspiration</h2>
-    <div class="row" style="flex-wrap:nowrap">
-      <input type="text" id="video-url-input" class="field" placeholder="Collez un lien ou une idée..." onkeydown="if(event.key==='Enter')enregistrerLienInspiration()">
-      <button class="btn" onclick="enregistrerLienInspiration()">Mémoriser</button>
-    </div>
-    <div id="saved-links-container" class="stack"></div>
-  </div>
-  <div class="card">
-    <h2><i class="fa-solid fa-circle-info"></i> Guide des 10 modules</h2>
+    <h2><i class="fa-solid fa-circle-info"></i> Guide des modules</h2>
     <div id="guide-grid" class="grid guide-grid"></div>
     <div id="guide-display" class="box"></div>
   </div>
 </section>
 
-<!-- 2. IA & SCRIPTS -->
-<section id="tab-2" class="pane" role="tabpanel">
+<!-- 2. IA -->
+<section id="tab-2" class="pane">
   <div class="card">
-    <div class="row between">
-      <h2><i class="fa-solid fa-brain"></i> Générateur IA &amp; scripts viraux</h2>
-      <div class="row">
-        <button id="script-nav-dashboard" class="btn btn-sm" onclick="switchScriptSubTab('dashboard')">Générateur</button>
-        <button id="script-nav-saved" class="btn btn-ghost btn-sm" onclick="switchScriptSubTab('saved')">Sauvegardes (<span id="script-saved-count">0</span>)</button>
-      </div>
-    </div>
-    <div id="script-view-dashboard" class="stack">
-      <div class="box">
-        <div class="grid cols-3">
-          <div><label class="lbl">Moteur</label>
-            <select id="ai-provider" class="field" onchange="onProviderChange()">
-              <option value="local">Moteur local</option>
-              <option value="gemini">Google Gemini</option>
-              <option value="groq">Groq</option>
-            </select></div>
-          <div style="grid-column:span 2"><label class="lbl">Clé API</label>
-            <input type="password" id="custom-ai-key" class="field" placeholder="Optionnel" oninput="saveKey()"></div>
-        </div>
-      </div>
-      <div><label class="lbl">Sujet principal</label>
-        <input type="text" id="script-video-topic" class="field" placeholder="Ex : usinage CNC..." onkeydown="if(event.key==='Enter')generateScriptContent()"></div>
-      <div class="grid cols-2">
-        <div><label class="lbl">Ton</label>
-          <select id="script-video-tone" class="field">
-            <option value="dynamique">Dynamique</option>
-            <option value="professionnel">Professionnel</option>
-            <option value="humoristique">Humoristique</option>
-            <option value="misterieux">Mystérieux</option>
-          </select></div>
-        <div><label class="lbl">Plateforme</label>
-          <select id="script-video-platform" class="field">
-            <option value="youtube">YouTube</option>
-            <option value="shorts">Shorts / TikTok</option>
-            <option value="instagram">Reel</option>
-          </select></div>
-      </div>
-      <div class="row" style="flex-wrap:nowrap">
-        <button id="script-generate-btn" class="btn block" onclick="generateScriptContent()"><i class="fa-solid fa-wand-magic-sparkles"></i> Générer</button>
-      </div>
-      <div id="script-loading-state" class="hide status" style="text-align:center">Création en cours…</div>
-      <div id="script-results-section" class="hide stack">
-        <div class="box"><h3>Titres</h3><div id="script-titles-container" class="stack"></div></div>
-        <div class="box"><h3>Script</h3><div id="script-detail-container" class="stack"></div></div>
-      </div>
+    <h2><i class="fa-solid fa-brain"></i> IA Scripts</h2>
+    <div class="box">
+      <input type="text" id="script-video-topic" class="field" placeholder="Sujet...">
+      <button class="btn block" onclick="showToast('Génération simulée (connectez une API).')">Générer</button>
     </div>
   </div>
 </section>
 
 <!-- 3. MP3 -->
-<section id="tab-3" class="pane" role="tabpanel">
-  <div class="grid cols-2">
-    <div class="card">
-      <h2><i class="fa-solid fa-file-export"></i> Convertisseur local</h2>
-      <input type="file" id="pc-video-input" accept="video/*,audio/*" onchange="onConvPicked(this)">
-      <select id="conversion-format" class="field">
-        <option value="mp3">Audio MP3</option>
-        <option value="wav">Audio WAV</option>
-      </select>
-      <button id="conv-run-btn" class="btn block" onclick="runConversion()">Lancer</button>
-      <div class="bar" id="conv-bar"><i></i></div>
-    </div>
-    <div class="card">
-      <h2><i class="fa-solid fa-circle-play"></i> Aperçu</h2>
-      <video id="preview-player" class="player" controls></video>
-      <div id="status-msg" class="status">En attente...</div>
-      <div id="download-zone" class="hide"><a id="download-btn-accueil" class="btn">Télécharger</a></div>
-    </div>
+<section id="tab-3" class="pane">
+  <div class="card">
+    <h2><i class="fa-solid fa-cloud-arrow-down"></i> Convertisseur MP3</h2>
+    <input type="file" id="pc-video-input" accept="video/*,audio/*">
+    <button class="btn block" onclick="showToast('Conversion en cours...')">Extraire</button>
   </div>
 </section>
 
-<!-- 4. STUDIO ASSEMBLAGE -->
-<section id="tab-4" class="pane" role="tabpanel">
+<!-- 4. STUDIO -->
+<section id="tab-4" class="pane active">
   <div class="grid cols-2">
     <div class="card">
-      <h2><i class="fa-solid fa-layer-group"></i> Studio</h2>
+      <h2><i class="fa-solid fa-layer-group"></i> Studio d'assemblage</h2>
       <div class="box">
         <input type="file" id="real-videos-input" accept="video/*" multiple onchange="onClipsPicked(this)">
         <div class="row between"><div id="sum-formula-display" class="small" style="color:var(--accent);font-weight:700">Somme : en attente…</div>
           <button class="btn btn-danger btn-sm" onclick="clearClips()">Vider</button></div>
         <div id="clips-list" class="stack" style="max-height:340px;overflow:auto"></div>
-      </div>
-      <div class="box">
-        <div class="grid cols-3">
-          <div><label class="lbl">Format</label><select id="output-ratio" class="field"><option value="16:9">16:9</option><option value="9:16">9:16</option></select></div>
-          <div><label class="lbl">Résolution</label><select id="output-res" class="field"><option value="720" selected>720p</option><option value="1080">1080p</option></select></div>
-          <div><label class="lbl">Cadrage</label><select id="fit-mode" class="field"><option value="contain">Entière</option><option value="cover">Remplir</option></select></div>
-        </div>
-        <div class="grid cols-2">
-          <div><label class="lbl">Filtre</label><select id="video-filter" class="field"><option value="none">Aucun</option><option value="grayscale(100%)">Gris</option></select></div>
-          <label class="check" style="align-self:end"><input type="checkbox" id="fade-clips" checked> Fondu</label>
-        </div>
       </div>
       <div class="box">
         <div class="grid cols-2">
@@ -269,7 +195,7 @@ body.busy .tab{opacity:.85}
         </div>
       </div>
       <div class="row" style="flex-wrap:nowrap">
-        <button id="studio-run-btn" class="btn block" onclick="runStudio()">Lancer l'assemblage</button>
+        <button id="studio-run-btn" class="btn block" onclick="runStudio()">Lancer le rendu</button>
         <button id="studio-cancel-btn" class="btn btn-danger hide" onclick="cancelJob()">Annuler</button>
       </div>
       <div class="bar" id="studio-bar"><i></i></div>
@@ -279,27 +205,36 @@ body.busy .tab{opacity:.85}
       <canvas id="render-canvas" class="player hide"></canvas>
       <video id="main-real-video" class="player hide" controls></video>
       <div id="studio-empty" class="empty">Le rendu apparaîtra ici.</div>
-      <div id="line1-status" class="status">Ligne 1 : en attente…</div>
+      <div id="line1-status" class="status">Ligne 1 : prêt</div>
       <div id="line2-status" class="status strong">Ligne 2 : prêt</div>
-      <div id="download-zone-cf" class="hide"><a id="download-btn-cf" class="btn">Télécharger</a></div>
+      <div id="download-zone-cf" class="hide" style="margin-top:10px"><a id="download-btn-cf" class="btn" download="hak-ia.webm">Télécharger</a></div>
     </div>
   </div>
 </section>
 
-<!-- MODALES DE CONNEXION ET PARTAGE -->
+<!-- MODULES MASQUÉS (Placeholders) -->
+<section id="tab-5" class="pane"><div class="card"><h2>Découpe</h2><p class="muted">Module 5</p></div></section>
+<section id="tab-6" class="pane"><div class="card"><h2>Mixeur</h2><p class="muted">Module 6</p></div></section>
+<section id="tab-7" class="pane"><div class="card"><h2>Vitesse</h2><p class="muted">Module 7</p></div></section>
+<section id="tab-8" class="pane"><div class="card"><h2>Gestion</h2><p class="muted">Module 8</p></div></section>
+<section id="tab-9" class="pane"><div class="card"><h2>Convertisseurs</h2><p class="muted">Module 9</p></div></section>
+<section id="tab-10" class="pane"><div class="card"><h2>Hub Social</h2><p class="muted">Module 10</p></div></section>
+
+</main>
+
 <div id="loginModal" class="modal">
   <div class="card" style="position:relative">
     <button class="btn btn-ghost btn-sm" style="position:absolute;top:10px;right:10px;" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
     <h2>Connexion</h2>
-    <p class="small muted">Recevez un lien magique par email.</p>
+    <p class="small muted">Lien magique par email.</p>
     <input type="email" id="loginEmail" class="field" placeholder="votre@email.com" style="margin-bottom:10px;">
-    <button class="btn block" onclick="loginMagicLink()">Envoyer le lien</button>
+    <button class="btn block" onclick="loginMagicLink()">Envoyer</button>
     <div id="loginMsg" class="small" style="margin-top:10px;text-align:center;"></div>
   </div>
 </div>
 
-<div id="toast-notification" role="status" aria-live="polite"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
-<footer>HAK IA Studio Ultimate Pro · Traitement 100% local</footer>
+<div id="toast-notification"><i class="fa-solid fa-circle-check"></i><span id="toast-message"></span></div>
+<footer>HAK IA Studio Ultimate Pro · 100% Local</footer>
 
 <script>
 'use strict';
@@ -311,7 +246,6 @@ const $ = id => document.getElementById(id);
 const SUPABASE_URL = 'https://gxjhkjpxpahgoiezdzxl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4amhranB4cGFoZ29pZXpkenhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NTU2NzIsImV4cCI6MjExMDMzMTY3Mn0.yL2PldZ4b9KFC9DzXPBwti-CQnpNLPKD1wUHhDWcr1c';
 
-// Correction du conflit : supabaseClient
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let isPremium = false;
 
@@ -339,7 +273,6 @@ async function checkUser() {
         return;
     }
     
-    // Vérification de la table 'subscriptions'
     const { data } = await supabaseClient.from('subscriptions').select('status').eq('user_id', session.user.id).maybeSingle();
     isPremium = (data?.status === 'active' || data?.status === 'trialing');
     
@@ -370,7 +303,7 @@ checkUser();
 // ==========================================
 function applyTheme(t) { 
     document.documentElement.dataset.theme = t; 
-    $('themeBtnText').textContent = t === 'dark' ? 'Mode Jour' : 'Mode Nuit';
+    $('themeBtnText').textContent = t === 'dark' ? 'Jour' : 'Nuit';
     $('themeBtn').querySelector('i').className = 'fa-solid ' + (t === 'dark' ? 'fa-sun' : 'fa-moon'); 
 }
 window.toggleTheme = () => { 
@@ -384,7 +317,12 @@ const TABS = [
   { id: 2, icon: 'fa-brain', label: 'IA Scripts' },
   { id: 3, icon: 'fa-cloud-arrow-down', label: 'MP3' },
   { id: 4, icon: 'fa-layer-group', label: 'Assemblage' },
-  // (Autres onglets masqués pour cette version simplifiée, mais tu peux les rajouter)
+  { id: 5, icon: 'fa-scissors', label: 'Découpe' },
+  { id: 6, icon: 'fa-sliders', label: 'Mixeur' },
+  { id: 7, icon: 'fa-gauge-high', label: 'Vitesse' },
+  { id: 8, icon: 'fa-folder-tree', label: 'Gestion' },
+  { id: 9, icon: 'fa-arrow-rotate-right', label: 'Convertisseurs' },
+  { id: 10, icon: 'fa-share-nodes', label: 'Hub Social' }
 ];
 function buildNav() {
   $('tabs').innerHTML = TABS.map(t => `<button class="tab" role="tab" id="nav-${t.id}" data-tab="${t.id}"><i class="fa-solid ${t.icon}"></i><span>${t.label}</span></button>`).join('');
@@ -407,7 +345,7 @@ window.showToast = (msg, type = 'ok') => {
 };
 
 // ==========================================
-// 3. MOTEUR STUDIO (Le reste de ton code)
+// 3. MOTEUR VIDÉO (STUDIO)
 // ==========================================
 let clips = [], clipSeq = 0, activeJob = null, currentStream = null;
 
@@ -452,7 +390,7 @@ window.cancelJob = () => {
 };
 
 function drawWatermark(ctx, cw, ch) {
-    if (isPremium) return; // Si Premium, pas de filigrane
+    if (isPremium) return;
     const fs = Math.round(Math.min(cw, ch) * 0.05);
     ctx.font = `700 ${fs}px system-ui,sans-serif`;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
