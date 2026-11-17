@@ -59,40 +59,85 @@ ul li.no::before { content:"✗ "; color:#ff5252; }
                 <li>Texte et audio avancés</li>
                 <li>Support prioritaire</li>
             </ul>
-            <!-- Remplacer VOTRE_LIEN par votre vrai Stripe Payment Link -->
-            <a id="stripeLink" href="https://buy.stripe.com/VOTRE_LIEN" class="cta" target="_blank" rel="noopener">S'abonner à 10 $/mois</a>
+            <!-- Lien de paiement Dodo Payments -->
+            <a id="dodoLink" href="https://buy.dodopayments.com/buy/votre_product_id" class="cta" target="_blank" rel="noopener">S'abonner à 10 $/mois</a>
             <div class="info-box" id="linkStatus">Connectez-vous d'abord pour lier l'abonnement à votre compte.</div>
         </div>
     </div>
 
-    <p class="note">Après paiement, votre accès Creator est activé sous 24h (ou immédiatement si le webhook est configuré).</p>
+    <p class="note">Après paiement via Dodo Payments, votre accès Creator est activé instantanément via les webhooks ou sous 24h.</p>
 </div>
 
 <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-    const SUPABASE_URL = 'https://VOTRE_PROJET.supabase.co';
-    const SUPABASE_ANON_KEY = 'VOTRE_ANON_KEY';
-    const configured = !SUPABASE_URL.includes('VOTRE_');
+    const SUPABASE_URL = 'https://gxjhkjpxpahgoiezdzxl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+    
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: { session } } = await supabase.auth.getSession();
+    const link = document.getElementById('dodoLink');
+    const status = document.getElementById('linkStatus');
 
-    if (configured) {
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const { data: { session } } = await supabase.auth.getSession();
-        const link = document.getElementById('stripeLink');
-        const status = document.getElementById('linkStatus');
-
-        if (session) {
-            // On pré-remplit l'email sur la page Stripe
-            const base = link.href.split('?')[0];
-            link.href = `${base}?prefilled_email=${encodeURIComponent(session.user.email)}`;
-            status.textContent = `Vous êtes connecté en tant que ${session.user.email}.`;
-        } else {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('Connectez-vous d\'abord sur la page d\'accueil, puis revenez ici.');
-                window.location.href = 'index.html';
-            });
-        }
+    if (session) {
+        // Transmission de l'email et de l'ID utilisateur en métadonnées ou paramètre de pré-remplissage Dodo Payments
+        const base = link.href.split('?')[0];
+        link.href = `${base}?prefilled_email=${encodeURIComponent(session.user.email)}&metadata_user_id=${encodeURIComponent(session.user.id)}`;
+        status.textContent = `Connecté en tant que ${session.user.email}. Votre paiement sera automatiquement rapproché de votre compte.`;
+    } else {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Veuillez vous connecter d\'abord sur la page d\'accueil pour lier votre abonnement.');
+            window.location.href = 'index.html';
+        });
     }
 </script>
 </body>
 </html>
+```[cite: 30]
+
+---
+
+### 2. Configuration des Webhooks Dodo Payments pour la synchronisation automatique
+
+Pour que le passage au plan **Creator** et le retrait du filigrane soient instantanés dès la validation du paiement par carte ou Apple Pay, configurez un webhook sur votre tableau de bord Dodo Payments pointant vers une fonction backend (Edge Function Supabase ou Node.js):
+
+1. Dans le dashboard **Dodo Payments**, rendez-vous sur **Developer → Webhooks**.
+2. Ajoutez l'URL de votre endpoint (par exemple `[https://votre-projet.supabase.co/functions/v1/dodo-webhook](https://votre-projet.supabase.co/functions/v1/dodo-webhook)`).
+3. Écoutez les événements clés :
+   * `payment.succeeded` ou `subscription.active`
+   * `subscription.cancelled` ou `subscription.expired`
+4. Mettez à jour la table Supabase `public.subscriptions` en fonction du `user_id` transmis dans les métadonnées (`metadata_user_id`) :
+
+```sql
+-- Exemple de traitement backend pour passer le statut en active
+update public.subscriptions
+set status = 'active', updated_at = now()
+where user_id = :user_id;
+```[cite: 31]
+
+---
+
+### 3. Optionnel : Utilisation du SDK d'Overlay Dodo Payments (Checkout en incrustation)
+
+Si vous préférez que la fenêtre de paiement s'ouvre directement sous forme de modal/overlay sur votre page sans quitter le site, vous pouvez intégrer le script officiel `dodopayments-checkout` via jsDelivr :
+
+```html
+<!-- À placer dans le head de pricing.html -->
+<script type="module">
+  import { DodoPayments } from "https://cdn.jsdelivr.net/npm/dodopayments-checkout@2.0.0/+esm";
+  
+  DodoPayments.Initialize({
+    mode: "live", // ou "test" pour l'environnement de test
+    displayType: "overlay",
+    onEvent: (event) => {
+      console.log("Événement Dodo Checkout:", event);
+      if (event.type === 'checkout.closed') {
+        // Actualiser l'état utilisateur si nécessaire
+      }
+    }
+  });
+
+  window.ouvrirCheckoutDodo = function(checkoutUrl) {
+    DodoPayments.Checkout.open({ checkoutUrl });
+  }
+</script>
