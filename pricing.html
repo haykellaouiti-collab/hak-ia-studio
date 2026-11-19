@@ -84,7 +84,7 @@ ul li.no::before { content:"✗ "; color:#ff5252; }
             checkoutUrl.searchParams.set('prefilled_email', session.user.email);
         }
         if (session.user?.id) {
-            checkoutUrl.searchParams.set('metadata_user_id', session.user.id);
+            checkoutUrl.searchParams.set('metadata[user_id]', session.user.id);
         }
         link.href = checkoutUrl.toString();
         status.textContent = `Connecté en tant que ${session.user.email}. Votre paiement sera automatiquement rapproché de votre compte.`;
